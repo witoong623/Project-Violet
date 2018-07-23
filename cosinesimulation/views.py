@@ -152,7 +152,7 @@ def onefavorite(request):
             color_count += 1
 
     json_object = {
-        'lables': [str(n) for n in range(datasets[0]['data'][0]['x'], 39)],
+        'labels': [n for n in range(datasets[0]['data'][0]['x'], 39)],
         'datasets': datasets,
         'title': 'case {}'.format(user_id)
     }

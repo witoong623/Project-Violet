@@ -101,7 +101,7 @@
             </div>
         </div>
         <hr>
-        <div class="row" v-show="chartData">
+        <div class="row">
             <canvas id="canvas"></canvas>
         </div>
     </div>
@@ -131,6 +131,7 @@
         const caseOneFav = range(38, 2);
         const caseTwoFav = range(74, 2);
         let context;
+        let chart;
 
         window.addEventListener('load', function () {
             axios.get(simulationDataUrl)
@@ -153,8 +154,7 @@
                         useLeague: false,
                         usePlayer: true,
                         useTime: false,
-                    },
-                    chartData: null
+                    }
                 },
                 computed: {
                     untilOptions: function () {
@@ -183,8 +183,11 @@
                 paramsSerializer: transformRequestOptions
             })
                 .then(response => {
-                    this.chartData = response.data;
-                    createChart2(response.data);
+                    if (!chart) {
+                        createChart(response.data);
+                    } else {
+                        updateChart(response.data);
+                    }
                 })
                 .catch(error => console.log(error));
         }
@@ -203,73 +206,51 @@
             return options ? options.slice(0, -1) : options;
         }
 
-        let tempCase1 = undefined;
-        let tempCase2 = undefined;
-
-        $('#simulateButton1').click(function () {
-            let afterTime = $('#afterTime').val();
-
-            if (!tempCase1) {
-                $.get(`onefavorite_extra/`, function (data) {
-                    tempCase1 = data;
-                    createChart2(tempCase1);
-                });
-            } else {
-                createChart2(tempCase1);
-            }
-        });
-
-        $('#simulateButton2').click(function () {
-            let afterTime = $('#afterTime').val();
-
-            if (!tempCase2) {
-                $.get(`twofavorite_extra/`, function (data) {
-                    tempCase2 = data;
-                    createChart2(tempCase2);
-                });
-            } else {
-                createChart2(tempCase2);
-            }
-        });
-
         function createChart(data) {
             let configs = {
                 type: 'line',
                 data: {
-                    labels: data.lables,
-                    datasets: [{
-                        label: 'After 1st',
-                        data: data.data,
-                        backgroundColor: '#FA3D3D',
-                        borderColor: '#FA3D3D',
-                        fill: false
-                    }],
-                    options: {
-                        title: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    title: {
+                        display: true,
+                        fontSize: 16,
+                        text: data.title
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        xAxes: [{
                             display: true,
-                            text: data.title
-                        }
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'nth match'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Cosine Similarity Value'
+                            }
+                        }]
                     }
                 }
             };
 
             let ctx = document.getElementById('canvas').getContext('2d');
-            let chart = new Chart(ctx, configs);
+            chart = new Chart(ctx, configs);
         }
 
-        function createChart2(data) {
-            let configs = {
-                type: 'line',
-                data: {
-                    labels: data.lables,
-                    datasets: data.datasets
-                }
-            };
-
-            let ctx = document.getElementById('canvas').getContext('2d');
-            let chart = new Chart(ctx, configs);
-
-            console.log('createChart2 done');
+        function updateChart(data) {
+            chart.data.labels = data.labels;
+            chart.data.datasets = data.datasets;
+            chart.options.title.text = data.title;
+            chart.update();
         }
 
         function range(size, startAt = 0) {
