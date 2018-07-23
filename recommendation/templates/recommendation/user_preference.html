@@ -1,0 +1,115 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/style.css' %}" />
+    <title>Project Violet</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Project Violet <span class="badge badge-success">Beta</span></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+        
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="{% url 'recommendation:index' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Recommendation
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'recommendation:index' %}">Matches recommendation</a>
+                            <a class="dropdown-item" href="{% url 'recommendation:preference_table' %}">User preferences table</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>    
+    </nav>
+    <div id="main-content" class="container">
+        <div class="row">
+            <div class="col-sm">
+                <h2>User preferences</h2>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <td>User ID</td>
+                            <td>Preference</td>
+                            <td>Matches that he watched</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>u1</td>
+                            <td>He like Man U</td>
+                            <td>Watched every matches that Man U play</td>
+                        </tr>
+                        <tr>
+                            <td>u2</td>
+                            <td>He like Man City</td>
+                            <td>Watched every matches that Man City play</td>
+                        </tr>
+                        <tr>
+                            <td>u3</td>
+                            <td>He like Bayern München</td>
+                            <td>Watched every matches that Bayern München play</td>
+                        </tr>
+                        <tr>
+                            <td>u4</td>
+                            <td>He like Bayer Leverkusen</td>
+                            <td>Watched every matches that Bayer Leverkusen play</td>
+                        </tr>
+                        <tr>
+                            <td>u5</td>
+                            <td>He like Real Madrid</td>
+                            <td>Watched every matches that Real Madrid play</td>
+                        </tr>
+                        <tr>
+                            <td>u6</td>
+                            <td>He like Barcelona</td>
+                            <td>Watched every matches that Barcelona play</td>
+                        </tr>
+                        <tr>
+                            <td>u7</td>
+                            <td>He like Sadio Mané</td>
+                            <td>Watch every match that Sadio Mané play</td>
+                        </tr>
+                        <tr>
+                            <td>u8</td>
+                            <td>He like Ángel Correa</td>
+                            <td>Watch every match that Ángel Correa play</td>
+                        </tr>
+                        <tr>
+                            <td>u9</td>
+                            <td>He like Alexander Isak</td>
+                            <td>Watch every match that Alexander Isak play</td>
+                        </tr>
+                        <tr>
+                            <td>u10</td>
+                            <td>He like watching any match in PL</td>
+                            <td>Watch every PL match</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="{% static 'recommendation/bootstrap.min.js' %}" ></script>
+  </body>
+</html>

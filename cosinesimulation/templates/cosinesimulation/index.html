@@ -1,0 +1,283 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/bootstrap-datepicker3.standalone.min.css' %}" />
+    <title>Project Violet</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Project Violet
+                <span class="badge badge-success">Beta</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="{% url 'recommendation:index' %}" id="navbarDropdown" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Recommendation
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Matches recommendation</a>
+                            <a class="dropdown-item" href="#">User preferences table</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="formContainer" class="container">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-center">Cosine Similarity Simulation</h3>
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form>
+                    <div class="form-row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="userSelect">เลือกผู้ใช้งาน</label>
+                                <select class="form-control" id="userSelect" v-model="selectedUser">
+                                    <option disabled value="">เลือกผู้ใช้งาน</option>
+                                    <option v-for="(user, key) in users" :key="key">[[ user ]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="untilMatch">เลือกข้อมูลที่ใช้สร้าง User Profile จนถึงการแข่งขันที่</label>
+                                <select class="form-control" id="untilMatch" multiple v-model="selectedUntils">
+                                    <option disabled value="">เลือกตำแมชสุดท้ายที่ดู</option>
+                                    <option v-for="(value, index) in untilOptions" :key="value.id" :value="value.id">No.[[ index + 1 ]] [[ value.text ]]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>เลือก attribute ที่นำไปคำนวน Cosine Similarity</h6>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="useLeague" v-model="attributeOptions.useLeague">
+                                <label class="form-check-label" for="useLeague">ลีก</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="useTeam" disabled checked>
+                                <label class="form-check-label" for="useTeam">ทีม</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="usePlayer" v-model="attributeOptions.usePlayer">
+                                <label class="form-check-label" for="usePlayer">ผู้เล่น</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="useTime" v-model="attributeOptions.useTime">
+                                <label class="form-check-label" for="useTime">เวลาการแข่งขัน</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <p>ชื่อผู้ใช้งาน [[selectedUser ]], การแข่งขันที่ถูกเลือก [[ selectedUntils ]]</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" @click.prevent="simulate">Simulate</button>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row" v-show="chartData">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <!-- Vue.js -->
+    <script src="{% static 'cosinesimulation/vue.js' %}"></script>
+    <!-- React -->
+    <!-- <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="{% static 'cosinesimulation/App.js' %}"></script> -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- bootstrap -->
+    <script src="{% static 'cosinesimulation/bootstrap.min.js' %}"></script>
+    <script src="{% static 'cosinesimulation/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'cosinesimulation/Chart.min.js' %}"></script>
+    <!-- React tutorial -->
+    <!-- <script src="{% static 'cosinesimulation/like_button.js' %}"></script> -->
+    <!-- Code that use to create chart -->
+    <script>
+        const simulationDataUrl = 'simulation_data/';
+        const caseOneFav = range(38, 2);
+        const caseTwoFav = range(74, 2);
+        let context;
+
+        window.addEventListener('load', function () {
+            axios.get(simulationDataUrl)
+                .then(response => setupVue(response.data))
+                .catch(error => console.log(error));
+        }, false);
+
+        function setupVue(data) {
+            let u1Data = data.u1;
+            let u11Data = data.u11;
+
+            context = new Vue({
+                delimiters: ['[[', ']]'],
+                el: '#formContainer',
+                data: {
+                    users: ['u1', 'u11'],
+                    selectedUser: '',
+                    selectedUntils: [],
+                    attributeOptions: {
+                        useLeague: false,
+                        usePlayer: true,
+                        useTime: false,
+                    },
+                    chartData: null
+                },
+                computed: {
+                    untilOptions: function () {
+                        if (this.selectedUser === 'u1') {
+                            return u1Data;
+                        } else if (this.selectedUser === 'u11') {
+                            return u11Data;
+                        }
+                    }
+                },
+                methods: {
+                    simulate: simulate
+                }
+            });
+        }
+
+        function simulate() {
+            axios.get('simulate/', {
+                params: {
+                    userId: this.selectedUser,
+                    untilMatches: this.selectedUntils,
+                    useLeague: this.attributeOptions.useLeague,
+                    usePlayer: this.attributeOptions.usePlayer,
+                    useTime: this.attributeOptions.useTime
+                },
+                paramsSerializer: transformRequestOptions
+            })
+                .then(response => {
+                    this.chartData = response.data;
+                    createChart2(response.data);
+                })
+                .catch(error => console.log(error));
+        }
+
+        function transformRequestOptions(params) {
+            let options = '';
+            for (const key in params) {
+                if (typeof params[key] !== 'object') {
+                    options += `${key}=${params[key]}&`;
+                } else if (typeof params[key] === 'object' && params[key].length) {
+                    params[key].forEach(el => {
+                        options += `${key}=${el}&`;
+                    });
+                }
+            }
+            return options ? options.slice(0, -1) : options;
+        }
+
+        let tempCase1 = undefined;
+        let tempCase2 = undefined;
+
+        $('#simulateButton1').click(function () {
+            let afterTime = $('#afterTime').val();
+
+            if (!tempCase1) {
+                $.get(`onefavorite_extra/`, function (data) {
+                    tempCase1 = data;
+                    createChart2(tempCase1);
+                });
+            } else {
+                createChart2(tempCase1);
+            }
+        });
+
+        $('#simulateButton2').click(function () {
+            let afterTime = $('#afterTime').val();
+
+            if (!tempCase2) {
+                $.get(`twofavorite_extra/`, function (data) {
+                    tempCase2 = data;
+                    createChart2(tempCase2);
+                });
+            } else {
+                createChart2(tempCase2);
+            }
+        });
+
+        function createChart(data) {
+            let configs = {
+                type: 'line',
+                data: {
+                    labels: data.lables,
+                    datasets: [{
+                        label: 'After 1st',
+                        data: data.data,
+                        backgroundColor: '#FA3D3D',
+                        borderColor: '#FA3D3D',
+                        fill: false
+                    }],
+                    options: {
+                        title: {
+                            display: true,
+                            text: data.title
+                        }
+                    }
+                }
+            };
+
+            let ctx = document.getElementById('canvas').getContext('2d');
+            let chart = new Chart(ctx, configs);
+        }
+
+        function createChart2(data) {
+            let configs = {
+                type: 'line',
+                data: {
+                    labels: data.lables,
+                    datasets: data.datasets
+                }
+            };
+
+            let ctx = document.getElementById('canvas').getContext('2d');
+            let chart = new Chart(ctx, configs);
+
+            console.log('createChart2 done');
+        }
+
+        function range(size, startAt = 0) {
+            return [...Array(size).keys()].map(i => i + startAt);
+
+        }
+
+    </script>
+</body>
+
+</html>
