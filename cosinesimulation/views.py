@@ -100,42 +100,15 @@ def simulate(request):
         user_id = request.GET['userId']
 
         if user_id == 'u1':
-            return onefavorite_extra(request)
+            return onefavorite(request)
         elif user_id == 'u11':
-            pass
-            #return HttpResponseRedirect(reverse('cosinesimulation:onefavorite', kwargs={'afterTime': after_time}))
+            return twofavorite(request)
 
-        return HttpResponse('user_id is {} but it didn\'t pass to handler method'.format(user_id))
+        raise Http404('user ID {} isn\'t available for simulation'.format(user_id))
     except KeyError:
         raise Http404('sample user_id doesn\'t exist, whole query string is {}'.format(request.GET.urlencode()))
 
-def onefavorite(request, afterTime):
-    # to ensure that we get matches after the latest match, plus 1 hour
-    parsed_after_time = datetime.strptime(afterTime, '%Y-%m-%d %H:%M') + timedelta(hours=1)
-
-    # using Man U as favorite team
-    man_u_matches = MatchSchedule.objects.filter((Q(ms_team1__exact=19) | Q(ms_team2__exact=19)) & Q(ms_time__gt=parsed_after_time))
-    match_count = man_u_matches.count()
-
-    cs_generator = CosineSimilarity('u1', parsed_after_time)
-    cs_at = {}
-    step = 38 - match_count + 1
-
-    for match in man_u_matches:
-        cs_value = cs_generator.get_user_match_similarity(match.ms_id)
-        cs_at[step] = cs_value
-        step += 1
-
-    all_steps = [key for key, value in cs_at.items()]
-    all_data = [value for key, value in cs_at.items()]
-    json_object = {
-        'lables': all_steps,
-        'data': all_data
-    }
-
-    return JsonResponse(json_object)
-
-def onefavorite_extra(request):
+def onefavorite(request):
     try:
         user_id = request.GET['userId']
         until_match_ids = [int(s) for s in request.GET.getlist('untilMatches')]
@@ -186,46 +159,7 @@ def onefavorite_extra(request):
 
     return JsonResponse(json_object)
 
-def onefavorite_extra_afc(request):
-    # using Arsenal as favorite team
-    man_u_matches = MatchSchedule.objects.filter(Q(ms_team1__exact=1) | Q(ms_team2__exact=1))
-
-    onehour = timedelta(hours=1)
-    datasets = []
-    played_count = 1
-
-    for match in man_u_matches:
-        after_time = match.ms_time + onehour
-        remaining_matches = man_u_matches.filter(ms_time__gt=after_time)
-        cs_generator_from_this_point = CosineSimilarity('u13', untildate=after_time)
-
-        data_points = []
-        # n-th number of match i.e. 1st, 2nd, 3rd, 4th, 5th and so on
-        match_number = 39 - remaining_matches.count()
-
-        for remaining_match in remaining_matches:
-            cs_value = cs_generator_from_this_point.get_user_match_similarity(remaining_match.ms_id)
-            data_points.append({'x': str(match_number), 'y': cs_value})
-            match_number += 1
-
-        if data_points:
-            dataset = {'label': 'after {}'.format(played_count)}
-            dataset['data'] = data_points
-            dataset['backgroundColor'] = COLORS[played_count]
-            dataset['borderColor'] = COLORS[played_count]
-            dataset['fill'] = False
-
-            datasets.append(dataset)
-            played_count += 1
-
-    json_object = {
-        'lables': [str(n) for n in range(2, 39)],
-        'datasets': datasets
-    }
-
-    return JsonResponse(json_object)
-
-def twofavorite_extra(request):
+def twofavorite(request):
     # using Man U as favorite team
     man_u_matches = MatchSchedule.objects.filter(Q(ms_team1__exact=19) | Q(ms_team2__exact=19)
         | Q(ms_team1__exact=1) | Q(ms_team2__exact=1))
