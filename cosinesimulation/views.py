@@ -49,7 +49,8 @@ COLORS = [
 ]
 
 UFT = {
-    'u1': 19
+    'u1': 19,
+    'u11': [19, 1]
 }
 
 def index(request):
@@ -160,44 +161,53 @@ def onefavorite(request):
     return JsonResponse(json_object)
 
 def twofavorite(request):
-    # using Man U as favorite team
-    man_u_matches = MatchSchedule.objects.filter(Q(ms_team1__exact=19) | Q(ms_team2__exact=19)
-        | Q(ms_team1__exact=1) | Q(ms_team2__exact=1))
-    total_matches = man_u_matches.count()
+    try:
+        user_id = request.GET['userId']
+        until_match_ids = [int(s) for s in request.GET.getlist('untilMatches')]
+        useleague = strtobool(request.GET['useLeague'])
+        useplayer = strtobool(request.GET['usePlayer'])
+        usetime = strtobool(request.GET['useTime'])
 
-    onehour = timedelta(minutes=5)
+    except KeyError as err:
+        return HttpResponseBadRequest('parameter {} invalid, whole query string is {}'.format(err, request.GET.urlencode()))
+
+    until_matches = MatchSchedule.objects.filter(ms_id__in=until_match_ids).order_by('ms_time')
+
     datasets = []
-    played_count = 1
+    color_count = 0
 
-    for match in man_u_matches:
-        after_time = match.ms_time + onehour
-        remaining_matches = man_u_matches.filter(ms_time__gt=after_time)
-        cs_generator_from_this_point = CosineSimilarity('u11', untildate=after_time)
+    # begin calculate cosine for each remaining matches
+    for previous_match in until_matches:
+        remaining_matches = MatchSchedule.objects.filter(((Q(ms_team1=UFT[user_id][0]) | Q(ms_team2=UFT[user_id][0]))
+            | (Q(ms_team1=UFT[user_id][1]) | Q(ms_team2=UFT[user_id][1]))) & Q(ms_time__gt=previous_match.ms_time))
 
+        after_time = previous_match.ms_time
+        cs_generator = CosineSimilarity(user_id, untildate=after_time, use_league=useleague, use_player=useplayer, use_time=usetime)
+
+        # previous match number, + plus 1 to get next match number
+        match_number = 74 - remaining_matches.count() + 1
+        after_match = match_number
         data_points = []
-        # n-th number of match i.e. 1st, 2nd, 3rd, 4th, 5th and so on
-        # there are 74 matches in this case
-        match_number = 75 - remaining_matches.count()
 
-        for remaining_match in remaining_matches:
-            cs_value = cs_generator_from_this_point.get_user_match_similarity(remaining_match.ms_id)
-            data_points.append({'x': str(match_number), 'y': cs_value})
+        for remain in remaining_matches:
+            cs_value = cs_generator.get_user_match_similarity(remain.ms_id)
+            data_points.append({'x': match_number, 'y': cs_value})
             match_number += 1
 
         if data_points:
-            dataset = {'label': 'after {}'.format(played_count)}
+            dataset = {'label': 'after {}'.format(after_match - 1)}
             dataset['data'] = data_points
-            dataset['backgroundColor'] = COLORS[played_count]
-            dataset['borderColor'] = COLORS[played_count]
+            dataset['backgroundColor'] = COLORS[color_count]
+            dataset['borderColor'] = COLORS[color_count]
             dataset['fill'] = False
 
             datasets.append(dataset)
-            played_count += 1
+            color_count += 1
 
     json_object = {
-        'lables': [str(n) for n in range(2, 75)],
+        'labels': [n for n in range(datasets[0]['data'][0]['x'], 75)],
         'datasets': datasets,
-        'title': 'case Man U and Arsenal'
+        'title': 'case {}'.format(user_id)
     }
 
     return JsonResponse(json_object)
