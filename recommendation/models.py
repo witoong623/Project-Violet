@@ -24,6 +24,7 @@ class MatchSchedule(models.Model):
     ms_team2 = models.ForeignKey('Team', models.DO_NOTHING, db_column='ms_team2', related_name='+')
     ms_time = models.DateTimeField(blank=True, null=True)
     ms_round = models.IntegerField()
+    ms_season = models.IntegerField()
     ms_team1_score = models.IntegerField(blank=True, null=True)
     ms_team2_score = models.IntegerField(blank=True, null=True)
 
@@ -60,7 +61,6 @@ class Team(models.Model):
     t_name = models.CharField(max_length=50)
     t_shortname = models.CharField(max_length=50)
     t_code = models.CharField(max_length=50)
-    t_league = models.ForeignKey('League', models.DO_NOTHING, blank=True, null=True)
 
     def __str__(self):
         return self.t_name

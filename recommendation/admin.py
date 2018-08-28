@@ -43,7 +43,7 @@ class UserWatchGenerateQueriesAdmin(admin.ModelAdmin):
 
 class MatchScheduleAdmin(admin.ModelAdmin):
     list_display = ('ms_id', 'ms_team1', 'ms_team2', 'ms_time')
-    list_filter = (UserCaseListFilter, 'ms_league',)
+    list_filter = (UserCaseListFilter, 'ms_league', 'ms_season')
 
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Team)
