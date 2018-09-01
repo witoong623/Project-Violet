@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'recommendation.apps.RecommendationConfig',
     'cosinesimulation.apps.CosinesimulationConfig',
-    'scorebasedrecommend.apps.ScorebasedrecommendConfig'
+    'scorebasedrecommend.apps.ScorebasedrecommendConfig',
+    'website.apps.WebsiteConfig',
 ]
 
 MIDDLEWARE = [

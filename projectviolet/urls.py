@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('', include('website.urls')),
     path('recommendation/', include('recommendation.urls')),
     path('cosinesimulation/', include('cosinesimulation.urls')),
     path('scorebasedrecommend/', include('scorebasedrecommend.urls')),
