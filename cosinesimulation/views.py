@@ -152,10 +152,13 @@ def onefavorite(request):
             datasets.append(dataset)
             color_count += 1
 
+    all_matches = MatchSchedule.objects.filter(Q(ms_team1=UFT[user_id]) | Q(ms_team2=UFT[user_id]))
+
     json_object = {
         'labels': [n for n in range(datasets[0]['data'][0]['x'], 39)],
         'datasets': datasets,
-        'title': 'case {}'.format(user_id)
+        'title': 'case {}'.format(user_id),
+        'matches_data': [{ 'id': match.ms_id, 'home': match.ms_team1.t_shortname, 'away': match.ms_team2.t_shortname, 'time': match.ms_time} for match in all_matches]
     }
 
     return JsonResponse(json_object)
