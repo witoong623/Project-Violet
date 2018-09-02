@@ -8,6 +8,9 @@ django = "*"
 mysqlclient = "*"
 pymysql = "*"
 pylint-django = "*"
+django-environ = "*"
+requests = "*"
+python-dateutil = "*"
 
 [dev-packages]
 pylint = "*"
