@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cron',
     'recommendation.apps.RecommendationConfig',
     'cosinesimulation.apps.CosinesimulationConfig',
     'scorebasedrecommend.apps.ScorebasedrecommendConfig',
@@ -131,3 +132,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 FOOTBALL_API_TOKEN = env('FOOTBALL_API_TOKEN', default="")
+
+CRON_CLASSES = [
+    'website.crons.MatchFetchCron',
+]

@@ -1,5 +1,10 @@
 from django.db import models
 
+class Team(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+
+
 class Match(models.Model):
     POSTPONED = 'POSTPONED'
     SCHEDULED = 'SCHEDULED'
@@ -32,11 +37,6 @@ class Match(models.Model):
     match_day = models.IntegerField()
     date = models.DateTimeField()
 
-    home_team = models.ForeignKey(Team, models.CASCADE)
-    away_team = models.ForeignKey(Team, models.CASCADE)
-    
-
-class Team(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=50)
+    home_team = models.ForeignKey(Team, models.CASCADE, related_name='home_team')
+    away_team = models.ForeignKey(Team, models.CASCADE, related_name='away_team')
 
