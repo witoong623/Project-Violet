@@ -21,5 +21,6 @@ urlpatterns = [
     path('recommendation/', include('recommendation.urls')),
     path('cosinesimulation/', include('cosinesimulation.urls')),
     path('scorebasedrecommend/', include('scorebasedrecommend.urls')),
+    path('collaborative/', include('collaborative.urls')),
     path('admin/', admin.site.urls)
 ]

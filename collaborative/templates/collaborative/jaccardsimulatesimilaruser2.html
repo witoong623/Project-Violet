@@ -1,0 +1,26 @@
+{% extends "collaborative/base.html" %}
+
+{% block content %}
+<h2>Similar user using Jaccard Similarity Coefficient, using user {{base_username}} as a based user</h2>
+
+{% for user_name, teams_list_value in simulate_results.items %}
+<h3>Against user {{user_name}}</h3>
+<table id="recommend-table" class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <td>Team ID</td>
+            <td>Jaccard Value</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team_id, jacc_val in teams_list_value.items %}
+        <tr>
+            <td>{{team_id}}</td>
+            <td>{{jacc_val}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endfor %}
+
+{% endblock %}

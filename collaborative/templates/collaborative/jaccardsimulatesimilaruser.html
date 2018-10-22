@@ -1,0 +1,21 @@
+{% extends "collaborative/base.html" %}
+
+{% block content %}
+<h3>Similar user using Jaccard Similarity Coefficient</h3>
+<table id="recommend-table" class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <td>Username</td>
+            <td>Value</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key, value in simulate_results.items %}
+        <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
