@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "lib": [ "es6", "dom" ],
+        "target": "es5",
+        "jsx": "react",
+        "experimentalDecorators": true
+    },
+    "files": [
+        "./website/static/website/js/index.tsx"
+    ]
+}

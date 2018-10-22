@@ -1,0 +1,67 @@
+body > .container {
+    padding-top: 60px;
+}
+
+.match-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-bottom: 15px;
+}
+
+.match-card-logo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex: 2 1 auto;
+    padding: .5rem;
+}
+
+.match-card-logo img {
+    margin: .3rem;
+}
+
+.match-score {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.match-card-logo-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.match-card-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.match-card-control {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.match-card-badge {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.match-card-badge > span {
+    padding: .3rem .4rem;
+    border-radius: 0;
+}

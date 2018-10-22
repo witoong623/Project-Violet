@@ -1,1 +1,8 @@
 {% extends "website/base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+<div id="react"></div>
+{% render_bundle 'index' %}
+{% endblock %}

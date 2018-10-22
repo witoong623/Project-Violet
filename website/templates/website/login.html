@@ -1,0 +1,27 @@
+{% extends "website/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<h3>Login to Project Violet</h3>
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+Your username and password didn't match. Please try again.
+</div>
+{% else %}
+<br>
+{% endif %}
+<form  method="post" action="{% url 'website:login' %}">
+    {% csrf_token %}
+    <div class="form-group col-md-6">
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {% render_field form.username class="form-control" placeholder=form.username.label aria-describedby="usernameHelp" %}
+        <small id="usernameHelp" class="form-text text-muted">{{ form.username.help_text }}</small>
+    </div>
+    <div class="form-group col-md-6">
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        {% render_field form.password class="form-control" placeholder=form.password.label %}
+    </div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+{% endblock %}
