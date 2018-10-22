@@ -41,9 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_cron',
+    'widget_tweaks',
+    'webpack_loader',
+    'rest_framework',
     'recommendation.apps.RecommendationConfig',
     'cosinesimulation.apps.CosinesimulationConfig',
     'scorebasedrecommend.apps.ScorebasedrecommendConfig',
+    'collaborative.apps.CollaborativeConfig',
     'website.apps.WebsiteConfig',
 ]
 
@@ -77,6 +81,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'projectviolet.wsgi.application'
 
+LOGIN_REDIRECT_URL = 'website:index'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -117,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -136,3 +141,11 @@ FOOTBALL_API_TOKEN = env('FOOTBALL_API_TOKEN', default="")
 CRON_CLASSES = [
     'website.crons.MatchFetchCron',
 ]
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'website/bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'website', 'webpack-stats.json'),
+        'POLL_INTERVAL': 1,
+    }
+}

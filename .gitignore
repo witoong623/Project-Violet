@@ -177,3 +177,6 @@ typings/
 
 # Serverless directories
 .serverless
+
+# react bundled pages directory
+/website/static/website/bundles/
