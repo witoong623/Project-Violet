@@ -145,7 +145,7 @@ CRON_CLASSES = [
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'website/bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'website', 'webpack-stats.json'),
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
         'POLL_INTERVAL': 1,
     }
 }

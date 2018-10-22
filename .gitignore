@@ -180,3 +180,4 @@ typings/
 
 # react bundled pages directory
 /website/static/website/bundles/
+webpack-stats.json
