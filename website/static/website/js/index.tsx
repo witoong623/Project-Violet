@@ -115,14 +115,9 @@ class MatchesStore {
 
   @action.bound
   updateMatchFromServer(matchJson: any, storeArray: Array<Match>) {
-    // this matchJson.match is actually id of match, not a match object
-    let match = storeArray.find(match => match.matchId === matchJson.match);
-
-    if (!match) {
-      match = new Match(matchJson.id);
-      match.updateFromJson(matchJson);
-      storeArray.push(match);
-    }
+    let match = new Match(matchJson.id);
+    match.updateFromJson(matchJson);
+    storeArray.push(match);
   }
 
   updateMatchIsWatchFromServer(userWatch: any) {
