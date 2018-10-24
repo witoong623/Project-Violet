@@ -75,6 +75,9 @@ class Competition(models.Model):
 
     currentSeason = models.ForeignKey('Season', blank=True, null=True, related_name='+', on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return self.name
+
 
 class Season(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -85,3 +88,6 @@ class Season(models.Model):
 
     winner = models.ForeignKey(Match, blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     competition = models.ForeignKey(Competition, related_name='seasons', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.display_name
