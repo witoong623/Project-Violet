@@ -7,6 +7,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDest
 from rest_framework.mixins import DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from core.models import RecommendedMatch
+from .pagination import RecentMatchesPagination
 from ..models import Match, UserWatchHistory
 from .serializers import MatchSerialzer, UserWatchHistorySerializer
 
@@ -25,8 +26,9 @@ class UpcommingMatchesList(ListAPIView):
 class RecentMatchesList(ListAPIView):
     '''Return latest 4 matches that already played '''
     today = timezone.now()
-    queryset = Match.objects.filter(date__lt=today).order_by('-date')[:4]
+    queryset = Match.objects.filter(date__lt=today).order_by('-date')
     serializer_class = MatchSerialzer
+    pagination_class = RecentMatchesPagination
 
 
 class TodayMatchesList(ListAPIView):
