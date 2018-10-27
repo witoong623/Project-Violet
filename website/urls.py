@@ -19,4 +19,6 @@ urlpatterns = [
     path('userwatchhistory/', api_views.UserWatchHistoryListCreateDestroyAPIView.as_view(), name='userwatchhistory'),
     # /userwatchhistory/:pk/
     path('userwatchhistory/<int:pk>/', api_views.UserWatchHistoryListCreateDestroyAPIView.as_view(), name='userwatchhistory'),
+    # /recommended-matches/
+    path('recommended-matches/', api_views.RecommendedMatchesList.as_view(), name='recommended_matches'),
 ]

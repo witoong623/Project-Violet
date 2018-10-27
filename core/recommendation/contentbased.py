@@ -83,7 +83,7 @@ class CosineSimilarity:
     def __init__(self, user):
         self.user = user
         self.user_profile = None
-        self.cs_baseline = 0.5
+        self.cs_baseline = 5
 
     def get_recommended_matches(self):
         if self.user_profile is None:
@@ -91,7 +91,7 @@ class CosineSimilarity:
 
         upcomming_matches = Match.objects.filter(date__gt=timezone.now())
 
-        recommended_matches = {}
+        recommended_matches = []
 
         for match in upcomming_matches:
             match_profile = get_match_profile(match.id)
@@ -110,7 +110,7 @@ class CosineSimilarity:
                 divisor_mp += 1
 
             if match_profile.timematrix in self.user_profile.timematrix:
-                dividend_up_mp += 1 * self.user_profile.timematrix
+                dividend_up_mp += 1 * self.user_profile.timematrix[match_profile.timematrix]
             divisor_mp += 1
 
             divisor_up += sum(self.user_profile.competitionsmatrix.values())
@@ -123,13 +123,15 @@ class CosineSimilarity:
             cs = dividend_up_mp / (divisor_mp * divisor_up)
 
             if cs >= self.cs_baseline:
-                recommended_matches[match.id] = (match, cs)
+                recommended_matches.append((match, cs))
+
+        if len(recommended_matches) == 0:
+            return None
 
         return recommended_matches
 
 
 def is_weekday_or_weekend(dt):
-    print('it\'s {}'.format(dt.weekday()))
     if dt.weekday() < 5:
         return WEEKDAY
     else:

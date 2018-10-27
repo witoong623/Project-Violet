@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView
 from rest_framework.mixins import DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
+from core.models import RecommendedMatch
 from ..models import Match, UserWatchHistory
 from .serializers import MatchSerialzer, UserWatchHistorySerializer
 
@@ -61,3 +62,15 @@ class UserWatchHistoryListCreateDestroyAPIView(DestroyModelMixin, ListCreateAPIV
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+class RecommendedMatchesList(ListAPIView):
+    serializer_class = MatchSerialzer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = Match.objects.filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')[:4]
+
+        if isinstance(queryset, QuerySet):
+            queryset = queryset.all()
+        return queryset

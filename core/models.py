@@ -13,7 +13,7 @@ class RecommendedMatch(models.Model):
         (HYBRID, 'Hybrid')
     )
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='recommended_matches')
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='+')
     recommendatoin_type = models.CharField(max_length=13, choices=RECOMMENDATION_TYPE, default=CONTENTBASED)
     value = models.FloatField()
