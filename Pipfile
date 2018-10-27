@@ -16,6 +16,7 @@ scikit-learn = {version = "*", extras = ["alldeps"]}
 django-widget-tweaks = "*"
 django-webpack-loader = "*"
 djangorestframework = "*"
+factory-boy = "*"
 
 [dev-packages]
 pylint = "*"

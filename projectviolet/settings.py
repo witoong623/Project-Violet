@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'scorebasedrecommend.apps.ScorebasedrecommendConfig',
     'collaborative.apps.CollaborativeConfig',
     'website.apps.WebsiteConfig',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
