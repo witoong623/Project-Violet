@@ -1,0 +1,13 @@
+{% extends "website/base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+<!-- set variable at the beginning of the page otherwise react won't be able to read it -->
+<script>
+    window.competitionId = {{ competition_id | safe }};
+</script>
+<h2>{{title}}</h2>
+<div id="react"></div>
+{% render_bundle 'competition' %}
+{% endblock %}

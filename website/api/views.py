@@ -76,3 +76,10 @@ class RecommendedMatchesList(ListAPIView):
         if isinstance(queryset, QuerySet):
             queryset = queryset.all()
         return queryset
+
+
+class CompetitionMatchesList(ListAPIView):
+    serializer_class = MatchSerialzer
+    queryset = Match.objects.all().order_by('date')
+    lookup_field = 'competition'
+    pagination_class = RecentMatchesPagination

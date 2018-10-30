@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import axios from 'axios';
 import { Match } from './models';
 import { MatchEntry } from './components/match-entry';
+import { IndexPageApi } from './transportlayers';
 
 enum MatchType {
   TodayMatch = 'todayMatch',
@@ -27,92 +28,7 @@ configure({
   enforceActions: 'observed'
 });
 
-class ProjectVioletApi {
-  private isRecenMatchesFirstFetch: boolean = true;
-  private recentMatchesNextUrl: string;
-
-  fetchUpcommingMatches(): Promise<any[]> {
-    return axios.get('/upcomming-matches/')
-      .then(res => res.data)
-      .catch(err => {
-        console.log(err);
-        return new Array<any>();
-      });
-  }
-
-  async fetchRecentMatches(): Promise<any[]> {
-    let fetchLink: string = null;
-
-    if (this.isRecenMatchesFirstFetch) {
-      this.isRecenMatchesFirstFetch = false;
-      fetchLink = '/recent-matches/'
-    } else if (this.recentMatchesNextUrl !== null) {
-      fetchLink = this.recentMatchesNextUrl
-    } else {
-      // No next page
-      return new Array();
-    }
-
-
-    return axios.get(fetchLink)
-      .then(res => {
-        this.recentMatchesNextUrl = res.data.next;
-        return res.data.results;
-      })
-      .catch(err => {
-        console.log(err);
-        return new Array();
-      });
-  }
-
-  fetchTodayMatches(): Promise<any[]> {
-    return axios.get('/today-matches/')
-      .then(res => res.data)
-      .catch(err => {
-        console.log(err);
-        return new Array<any>();
-      });
-  }
-
-  fetchRecommendedMatches(): Promise<any[]> {
-    return axios.get('/recommended-matches/')
-      .then(res => res.data)
-      .catch(err => {
-        if (err.request.status === 403) {
-          // unauthenticate, anonymous user
-          return new Array<any>();
-        } else if (err.request) {
-          // the request was made but no response was received, log then ignore
-          console.log(err.request);
-          return;
-        } else {
-          // unknown error, throw it
-          throw err;
-        }
-      })
-  }
-
-  fetchUserWatchHistory(): Promise<any[]> {
-    return axios.get('/userwatchhistory/')
-      .then(res => res.data)
-      .catch(err => {
-        if (err.request.status === 403) {
-          // unauthenticate, anonymous user
-          return new Array<any>();
-        } else if (err.request) {
-          // the request was made but no response was received, log then ignore
-          console.log(err.request);
-          return;
-        } else {
-          // unknown error, throw it
-          throw err;
-        }
-      });
-  }
-}
-
 class MatchesStore {
-  @observable matches: Array<Match> = new Array<Match>();
   @observable todayMatches: Array<Match> = new Array<Match>();
   @observable upcommingMatches: Array<Match> = new Array<Match>();
   @observable recentMatches: Array<Match> = new Array<Match>();
@@ -122,39 +38,38 @@ class MatchesStore {
   // so that we can find duplicate match
   private findingMatches: Array<Match> = new Array<Match>();
 
-  constructor(public projectVioletApi: ProjectVioletApi) {
-    this.projectVioletApi = projectVioletApi;
+  constructor(public indexPageApi: IndexPageApi) {
     this.fetchMatchLists()
       .then(() => this.fetchUserWatchHistory())
       .then(() => this.fetchRecommendedMatches());
   }
 
   private async fetchMatchLists() {
-    let upcommingMatches = await this.projectVioletApi.fetchUpcommingMatches();
+    let upcommingMatches = await this.indexPageApi.fetchUpcommingMatches();
     upcommingMatches.forEach((matchJson: any) => this.updateMatchFromServer(matchJson, this.upcommingMatches));
 
-    let todayMatches = await this.projectVioletApi.fetchTodayMatches();
+    let todayMatches = await this.indexPageApi.fetchTodayMatches();
     todayMatches.forEach(matchJosn => this.updateMatchFromServer(matchJosn, this.todayMatches));
 
-    let recentMatches = await this.projectVioletApi.fetchRecentMatches();
+    let recentMatches = await this.indexPageApi.fetchRecentMatches();
     recentMatches.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recentMatches));
   }
 
   // This method is used to call from outside store to fetch next recent matches
   async fetchNextRecentMatches() {
-    let recentMatches = await this.projectVioletApi.fetchRecentMatches();
+    let recentMatches = await this.indexPageApi.fetchRecentMatches();
     recentMatches.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recentMatches));
   }
 
   private fetchUserWatchHistory() {
-    this.projectVioletApi.fetchUserWatchHistory()
+    this.indexPageApi.fetchUserWatchHistory()
       .then(data => {
         data.forEach((userWatch: any) => this.updateMatchIsWatchFromServer(userWatch));
       });
   }
 
   private fetchRecommendedMatches() {
-    this.projectVioletApi.fetchRecommendedMatches()
+    this.indexPageApi.fetchRecommendedMatches()
       .then(data => {
         data.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recommendedMatches))
       })
@@ -284,7 +199,7 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
   }
 }
 
-const api = new ProjectVioletApi();
+const api = new IndexPageApi();
 const store = new MatchesStore(api);
 
 const element = <IndexPage matchesStore={store} />;

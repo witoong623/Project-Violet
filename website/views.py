@@ -2,76 +2,19 @@ import os
 from datetime import timedelta, datetime, timezone
 from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
 from .models import Match
 
 
+COMPETITION = ['pl', 'bl1', 'pd']
+COMPETITION_ID = {
+    'pl': 2021
+}
+
+
 def index(request):
-    # today matches
-    # from this momemt until next 24 hours
-    today_min = timezone.now()
-    today_max = today_min + timedelta(days=1)
-    today_matches_query = Match.objects.filter(date__range=(today_min, today_max))
-
-    today_matches = []
-
-    for match in today_matches_query:
-        entry = {
-            'home_team': match.home_team.display_name,
-            'away_team': match.away_team.display_name,
-            'home_logo': match.home_team.short_name,
-            'away_logo': match.away_team.short_name,
-            'date': match.date
-        }
-
-        today_matches.append(entry)
-
-    # last 4 matches with score
-    now = timezone.now()
-    previous_matches_query = Match.objects.filter(date__lt=now).order_by('-date')[:4]
-
-    previous_matches = []
-
-    for match in previous_matches_query:
-        entry = {
-            'home_team': match.home_team.display_name,
-            'away_team': match.away_team.display_name,
-            'home_logo': match.home_team.short_name,
-            'away_logo': match.away_team.short_name,
-            'date': match.date,
-            'home_score': match.home_score,
-            'away_score': match.away_score
-        }
-
-        previous_matches.append(entry)
-
-    # upcomming matches: matches that are not today matches but next matches in row
-    last_previous_match = previous_matches_query.first()
-    upcomming_matches = []
-
-    if last_previous_match is not None:
-        last_match_day = last_previous_match.match_day
-        upcomming_matches_query = Match.objects.filter(match_day=last_match_day + 1).order_by('date')
-
-        for match in upcomming_matches_query:
-            entry = {
-                'home_team': match.home_team.display_name,
-                'away_team': match.away_team.display_name,
-                'home_logo': match.home_team.short_name,
-                'away_logo': match.away_team.short_name,
-                'date': match.date
-            }
-
-            upcomming_matches.append(entry)
-
-    context = {
-        'today_matches': today_matches,
-        'previous_matches': previous_matches,
-        'upcomming_matches': upcomming_matches
-    }
-
-    return render(request, 'website/index.html', context=context)
+    return render(request, 'website/index.html')
 
 
 def get_comming_matches(request):
@@ -96,3 +39,23 @@ def get_comming_matches(request):
         upcomming_matches.append(entry)
 
     return JsonResponse(upcomming_matches, safe=False)
+
+
+def competition_view(request, name):
+    title = None
+
+    if name == 'pl':
+        title = 'Premier League'
+    elif name == 'bl1':
+        title = 'Bundesliga'
+    elif name == 'pd':
+        title = 'Laliga'
+    else:
+        return Http404()
+
+    context = {
+        'title': title,
+        'competition_id': COMPETITION_ID[name]
+    }
+
+    return render(request, 'website/competition.html', context=context)
