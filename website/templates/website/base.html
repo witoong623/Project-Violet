@@ -5,9 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/bootstrap.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/style.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'recommendation/bootstrap-datepicker3.standalone.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'website/bootstrap.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'website/main.css' %}" />
     <title>{% block title %}Project Violet{% endblock %}</title>
   </head>
@@ -25,7 +23,7 @@
                         <a class="nav-link" href="{% url 'website:index' %}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{% url 'recommendation:index' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Competitions
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -62,7 +60,7 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="{% static 'recommendation/bootstrap.min.js' %}" ></script>
+    <script src="{% static 'website/bootstrap.min.js' %}" ></script>
     {% block javascript %}
     {% endblock %}
   </body>
