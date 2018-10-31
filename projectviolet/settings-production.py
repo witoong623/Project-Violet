@@ -5,6 +5,8 @@ SECRET_KEY = env('PROJECT_VIOLET_SECRET', default='')
 
 DEBUG = False
 
+ALLOWED_HOSTS = ['projectviolet.aliveplex.net']
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

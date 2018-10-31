@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+
+# TODO: the path of applications that are not indclude in INSTALL_APPS
+# must be removed before migrate in production!
 urlpatterns = [
     path('', include('website.urls')),
     path('recommendation/', include('recommendation.urls')),
