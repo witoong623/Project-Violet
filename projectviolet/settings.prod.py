@@ -39,7 +39,7 @@ DATABASES = {
         'NAME': 'football_recommend',
         'USER': 'projectvioletdb',
         'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '3306',
         'ATOMIC_REQUESTS': True,
     }
@@ -48,3 +48,5 @@ DATABASES = {
 STATIC_ROOT = '~/projectviolet/staticfiles/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+ROOT_URLCONF = 'projectviolet.urls.prod'
