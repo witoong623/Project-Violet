@@ -49,4 +49,4 @@ STATIC_ROOT = '~/projectviolet/staticfiles/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ROOT_URLCONF = 'projectviolet.urls.prod'
+ROOT_URLCONF = 'projectviolet.urls_prod'
