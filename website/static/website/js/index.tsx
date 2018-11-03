@@ -33,15 +33,21 @@ class MatchesStore {
   @observable upcommingMatches: Array<Match> = new Array<Match>();
   @observable recentMatches: Array<Match> = new Array<Match>();
   @observable recommendedMatches: Array<Match> = new Array<Match>();
+  @observable isAuthenticate: boolean = false;
+  private userWatchHistory: Array<any> = new Array<any>();
 
   // findingMatches is use to store every match regardless of their type
   // so that we can find duplicate match
   private findingMatches: Array<Match> = new Array<Match>();
 
   constructor(public indexPageApi: IndexPageApi) {
-    this.fetchMatchLists()
-      .then(() => this.fetchUserWatchHistory())
-      .then(() => this.fetchRecommendedMatches());
+    this.fetchRecommendedMatches()
+      .then(() => {
+        if (this.isAuthenticate) {
+          this.fetchUserWatchHistory()
+        }
+      })
+      .then(() => this.fetchMatchLists());
   }
 
   private async fetchMatchLists() {
@@ -64,13 +70,19 @@ class MatchesStore {
   private fetchUserWatchHistory() {
     this.indexPageApi.fetchUserWatchHistory()
       .then(data => {
-        data.forEach((userWatch: any) => this.updateMatchIsWatchFromServer(userWatch));
+        this.userWatchHistory = data;
       });
   }
 
-  private fetchRecommendedMatches() {
-    this.indexPageApi.fetchRecommendedMatches()
+  private fetchRecommendedMatches(): Promise<void> {
+    return this.indexPageApi.fetchRecommendedMatches()
       .then(data => {
+        if (data === null) {
+          this.setIsAuthenticate(false);
+          return;
+        } else {
+          this.setIsAuthenticate(true);
+        }
         data.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recommendedMatches))
       })
       .catch(err => console.log(err));
@@ -86,6 +98,14 @@ class MatchesStore {
 
     let match = new Match(matchJson.id);
     match.updateFromJson(matchJson);
+
+    if (this.userWatchHistory.length > 0) {
+      let found = this.userWatchHistory.find(uw => uw.match === match.matchId);
+      if (found) {
+        match.isWatch = true;
+        match.watchId = found.id;
+      }
+    }
     storeArray.push(match);
     this.findingMatches.push(match);
   }
@@ -122,15 +142,20 @@ class MatchesStore {
     match.isWatch = true;
     match.watchId = userWatch.id;
   }
+
+  @action.bound
+  setIsAuthenticate(is: boolean) {
+    this.isAuthenticate = is;
+  }
 }
 
 
-@observer class MatchesSection extends React.Component<{matches: Array<Match>, matchType: MatchType}> {
+@observer class MatchesSection extends React.Component<{matches: Array<Match>, matchType: MatchType, isAuthenticate: boolean}> {
   render() {
-    const { matches, matchType } = this.props;
+    const { matches, matchType, isAuthenticate } = this.props;
     const baseKey = matchTypeBaseKeys[matchType];
 
-    const entries = matches.map(match => <MatchEntry key={match.matchId} match={match} />);
+    const entries = matches.map(match => <MatchEntry isAuthenticate={isAuthenticate} key={match.matchId} match={match} />);
     const rows = [];
 
     for (let i = 0; i < entries.length; i+=4) {
@@ -153,7 +178,7 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
     const { matchesStore } = this.props;
 
     const todayMatchesSection = matchesStore.todayMatches.length > 0 ? (
-      <MatchesSection matchType={MatchType.TodayMatch} matches={matchesStore.todayMatches} />
+      <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.TodayMatch} matches={matchesStore.todayMatches} />
     ) : (
       <div className="alert alert-info" role="alert">
         No match today.
@@ -161,7 +186,7 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
     );
 
     const upcommingMatchesSection = matchesStore.upcommingMatches.length > 0 ? (
-      <MatchesSection matchType={MatchType.UpcommingMatch} matches={matchesStore.upcommingMatches} />
+      <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.UpcommingMatch} matches={matchesStore.upcommingMatches} />
     ) : (
       <div className="alert alert-info" role="alert">
         No upcomming match.
@@ -169,7 +194,7 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
     );
 
     const recentMatchesSection = matchesStore.recentMatches.length > 0 ? (
-      <MatchesSection matchType={MatchType.RecentMatch} matches={matchesStore.recentMatches} />
+      <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.RecentMatch} matches={matchesStore.recentMatches} />
     ) : (
       <div className="alert alert-info" role="alert">
         No recent match.
@@ -177,7 +202,7 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
     );
 
     const recommendedMatchesSection = matchesStore.recommendedMatches.length > 0 ? (
-      <MatchesSection matchType={MatchType.Recommended} matches={matchesStore.recommendedMatches} />
+      <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.Recommended} matches={matchesStore.recommendedMatches} />
     ) : (
       <div className="alert alert-info" role="alert">
         No recommended match.

@@ -1,15 +1,44 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { observable, action, configure } from 'mobx';
+import { observable, action, configure, runInAction } from 'mobx';
 import { observer } from "mobx-react";
 import axios from 'axios';
 import { Match } from './models';
 import { CompetitionPageApi } from './transportlayers';
 
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.xsrfCookieName = 'csrftoken';
+
+configure({
+  enforceActions: 'observed'
+});
+
 @observer
-class RowTable extends React.Component<{match: Match}> {
+class RowTable extends React.Component<{match: Match, isAuthenticate: boolean}> {
+  @action.bound
+  handleInputChange(event: any) {
+    this.props.match.isWatch = event.target.checked;
+
+    if (this.props.match.isWatch) {
+      axios.post('/userwatchhistory/', { match: this.props.match.matchId })
+        .then(action(res => {
+        }))
+        .catch(action(err => {
+          this.props.match.isWatch = false;
+        }));
+    } else {
+      axios.delete(`/userwatchhistory/${this.props.match.watchId}/`)
+        .then(action(res => {
+        }))
+        .catch(action(err => {
+          this.props.match.isWatch = true;
+        }));
+    }
+    
+  }
+  
   render() {
-    const { match } = this.props;
+    const { match, isAuthenticate } = this.props;
 
     return (
       <tr>
@@ -17,14 +46,16 @@ class RowTable extends React.Component<{match: Match}> {
         <td>{match.home}</td>
         <td>{match.away}</td>
         <td>{match.homeScore !== null ? match.homeScore : '-'} {match.homeScore !== null && ' - '} {match.awayScore !== null && match.awayScore}</td>
-        <td>
-          <div className="form-check">
-            <input id={match.matchId.toString()} className="form-check-input" type="checkbox" />
-            <label className="form-check-label" htmlFor={match.matchId.toString()}>
-              Watch this match
-            </label>
-          </div>
-        </td>
+        {isAuthenticate &&
+          <td>
+            <div className="form-check">
+              <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} />
+              <label className="form-check-label" htmlFor={match.matchId.toString()}>
+                Watch this match
+              </label>
+            </div>
+          </td>
+        }
       </tr>
     )
   }
@@ -34,7 +65,7 @@ class RowTable extends React.Component<{match: Match}> {
 class CompetitionPage extends React.Component<{store: CompetitionMatchStore}> {
   render() {
     const { matches } = this.props.store;
-    let tableRows = matches.map(match => <RowTable key={match.matchId} match={match} />)
+    let tableRows = matches.map(match => <RowTable key={match.matchId} match={match} isAuthenticate={store.isAuthenticate} />)
 
     return (
       <table className="table table-bordered">
@@ -44,7 +75,9 @@ class CompetitionPage extends React.Component<{store: CompetitionMatchStore}> {
             <td>Home team</td>
             <td>Away team</td>
             <td>Score</td>
-            <td>Watch?</td>
+            {this.props.store.isAuthenticate &&
+              <td>Watch?</td>
+            }
           </tr>
         </thead>
         <tbody>
@@ -58,9 +91,11 @@ class CompetitionPage extends React.Component<{store: CompetitionMatchStore}> {
 class CompetitionMatchStore {
   @observable matches: Array<Match> = new Array<Match>();
   @observable isAuthenticate: boolean;
+  private userWatchHistory: Array<any> = new Array<any>();
 
   constructor(public competitionPageApi: CompetitionPageApi) {
-    this.fetchMatchList();
+    this.fetchUserWatchHistory()
+      .then(() => this.fetchMatchList());
   }
 
   private async fetchMatchList(): Promise<void> {
@@ -68,26 +103,37 @@ class CompetitionMatchStore {
     matchList.forEach(matchJson => this.updateMatchFromServer(matchJson));
   }
 
-  private fetchUserWatchHistory() {
-    this.competitionPageApi.fetchUserWatchHistory()
-      .then(data => {
-        data.forEach((userWatch: any) => this.updateMatchIsWatchFromServer(userWatch));
-      });
-  }
-
   async fetchNextMatchList(): Promise<void> {
     await this.fetchMatchList();
+  }
+
+  private fetchUserWatchHistory(): Promise<void> {
+    return this.competitionPageApi.fetchUserWatchHistory()
+      .then(data => {
+        if (data === null) {
+          runInAction(() => this.isAuthenticate = false);
+          return;
+        } else {
+          runInAction(() => this.isAuthenticate = true);
+        }
+        this.userWatchHistory = data;
+      });
   }
 
   @action.bound
   updateMatchFromServer(matchJson: any) {
     let match = new Match(matchJson.id);
     match.updateFromJson(matchJson);
+
+    if (this.userWatchHistory.length > 0) {
+      let found = this.userWatchHistory.find(uw => uw.match === match.matchId);
+      if (found) {
+        match.isWatch = true;
+        match.watchId = found.id;
+      }
+    }
+
     this.matches.push(match);
-  }
-
-  updateMatchIsWatchFromServer(userWatch: any) {
-
   }
 }
 

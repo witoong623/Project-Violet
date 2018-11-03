@@ -53,7 +53,7 @@ export class IndexPageApi {
       .catch(err => {
         if (err.request.status === 403) {
           // unauthenticate, anonymous user
-          return new Array<any>();
+          return null;
         } else if (err.request) {
           // the request was made but no response was received, log then ignore
           console.log(err.request);
@@ -71,7 +71,7 @@ export class IndexPageApi {
       .catch(err => {
         if (err.request.status === 403) {
           // unauthenticate, anonymous user
-          return new Array<any>();
+          return null;
         } else if (err.request) {
           // the request was made but no response was received, log then ignore
           console.log(err.request);
@@ -122,7 +122,7 @@ export class CompetitionPageApi {
       .catch(err => {
         if (err.request.status === 403) {
           // unauthenticate, anonymous user
-          return new Array<any>();
+          return null;
         } else if (err.request) {
           // the request was made but no response was received, log then ignore
           console.log(err.request);

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Match } from '../models';
 
 @observer
-export class MatchEntry extends React.Component<{match: Match}> {
+export class MatchEntry extends React.Component<{match: Match, isAuthenticate: boolean}> {
     @action.bound
     handleInputChange(event: any) {
       this.props.match.isWatch = event.target.checked;
@@ -29,7 +29,7 @@ export class MatchEntry extends React.Component<{match: Match}> {
     }
   
     render() {
-      const { match } = this.props;
+      const { match, isAuthenticate } = this.props;
 
       const watchBadge = match.isWatch ? (
         <div className="match-card-badge">
@@ -72,14 +72,16 @@ export class MatchEntry extends React.Component<{match: Match}> {
               <h5>{match.away}</h5>
               <h6>{match.date}</h6>
             </div>
-            <div className="match-card-control">
-              <div className="form-check">
-                <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} />
-                <label className="form-check-label" htmlFor={match.matchId.toString()}>
-                  Watch this match
+            {isAuthenticate &&
+              <div className="match-card-control">
+                <div className="form-check">
+                  <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} />
+                  <label className="form-check-label" htmlFor={match.matchId.toString()}>
+                    Watch this match
                 </label>
+                </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       )
