@@ -5,7 +5,7 @@ SECRET_KEY = env('PROJECT_VIOLET_SECRET', default='')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['projectviolet.aliveplex.net']
+ALLOWED_HOSTS = [env('ALLOWED_HOST', default='*')]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,7 +45,7 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = '~/projectviolet/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
