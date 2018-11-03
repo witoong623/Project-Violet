@@ -35,7 +35,7 @@ class TodayMatchesList(ListAPIView):
     '''Return matches that will be playing today '''
     today_min = timezone.now()
     today_max = today_min + timedelta(days=1)
-    queryset = Match.objects.filter(date__range=(today_min, today_max)).order_by('-date')
+    queryset = Match.objects.filter(date__range=(today_min, today_max)).order_by('date')
     serializer_class = MatchSerialzer
 
 
