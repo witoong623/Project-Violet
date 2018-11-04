@@ -1,0 +1,2 @@
+* 6 * * * python /django/manage.py fetch_and_update_match
+5 6 * * * python /django/manage.py generate_recommendation

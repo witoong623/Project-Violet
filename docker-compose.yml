@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.2.18
+    env_file:
+      - config.env
+  web:
+    image: projectviolet:beta
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - config.env
+    
