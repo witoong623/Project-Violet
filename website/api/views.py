@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.utils import timezone
-from django.db.models import Subquery, QuerySet
+from django.db.models import Subquery, QuerySet, Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView
@@ -15,10 +15,10 @@ from .serializers import MatchSerialzer, UserWatchHistorySerializer
 class UpcommingMatchesList(ListAPIView):
     '''Return all matches from next match day '''
     today = timezone.now()
+    next_3_days = today + timedelta(days=3)
     queryset = (Match
                 .objects
-                .filter(match_day=Subquery(Match.objects.filter(date__gt=today).order_by('date').values('match_day')[:1]))
-                .filter(status=Match.SCHEDULED)
+                .filter(Q(date__range=(today, next_3_days)) & Q(status=Match.SCHEDULED))
                 .order_by('date'))
     serializer_class = MatchSerialzer
 
