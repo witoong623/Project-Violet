@@ -7,8 +7,8 @@ module.exports = {
   context: __dirname,
 
   entry: {
-    index: './website/static/website/js/index',
-    competition: './website/static/website/js/competition'
+    index: './website/static/website/js/index.tsx',
+    competition: './website/static/website/js/competition.tsx'
   },
   output: {
       path: path.resolve('./website/static/website/bundles/'),

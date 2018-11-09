@@ -31,7 +31,6 @@ configure({
 class MatchesStore {
   @observable todayMatches: Array<Match> = new Array<Match>();
   @observable upcommingMatches: Array<Match> = new Array<Match>();
-  @observable recentMatches: Array<Match> = new Array<Match>();
   @observable recommendedMatches: Array<Match> = new Array<Match>();
   @observable isAuthenticate: boolean = false;
   private userWatchHistory: Array<any> = new Array<any>();
@@ -56,15 +55,6 @@ class MatchesStore {
 
     let todayMatches = await this.indexPageApi.fetchTodayMatches();
     todayMatches.forEach(matchJosn => this.updateMatchFromServer(matchJosn, this.todayMatches));
-
-    let recentMatches = await this.indexPageApi.fetchRecentMatches();
-    recentMatches.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recentMatches));
-  }
-
-  // This method is used to call from outside store to fetch next recent matches
-  async fetchNextRecentMatches() {
-    let recentMatches = await this.indexPageApi.fetchRecentMatches();
-    recentMatches.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recentMatches));
   }
 
   private fetchUserWatchHistory() {
@@ -112,13 +102,7 @@ class MatchesStore {
 
   updateMatchIsWatchFromServer(userWatch: any) {
     // find in every stores since every matches can be watched
-    let match = this.recentMatches.find(match => match.matchId === userWatch.match);
-    if (match) {
-      this.performUpdateMatchIsWatch(match, userWatch);
-      return;
-    }
-
-    match = this.upcommingMatches.find(match => match.matchId === userWatch.match);
+    let match = this.upcommingMatches.find(match => match.matchId === userWatch.match);
     if (match) {
       this.performUpdateMatchIsWatch(match, userWatch);
       return;
@@ -193,14 +177,6 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
       </div>
     );
 
-    const recentMatchesSection = matchesStore.recentMatches.length > 0 ? (
-      <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.RecentMatch} matches={matchesStore.recentMatches} />
-    ) : (
-      <div className="alert alert-info" role="alert">
-        No recent match.
-      </div>
-    );
-
     const recommendedMatchesSection = matchesStore.recommendedMatches.length > 0 ? (
       <MatchesSection isAuthenticate={matchesStore.isAuthenticate} matchType={MatchType.Recommended} matches={matchesStore.recommendedMatches} />
     ) : (
@@ -217,8 +193,6 @@ class IndexPage extends React.Component<{matchesStore: MatchesStore}> {
         {todayMatchesSection}
         <h2>Upcomming matches</h2>
         {upcommingMatchesSection}
-        <h2>Recent matches</h2>
-        {recentMatchesSection}
       </div>
     );
   }
@@ -232,12 +206,3 @@ ReactDOM.render(
   element,
   document.getElementById('react')
 );
-
-window.onscroll = () => {
-  if (
-    window.innerHeight + document.documentElement.scrollTop
-    === document.documentElement.offsetHeight
-  ) {
-    store.fetchNextRecentMatches();
-  }
-}
