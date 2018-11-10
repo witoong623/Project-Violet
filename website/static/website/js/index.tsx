@@ -40,12 +40,8 @@ class MatchesStore {
   private findingMatches: Array<Match> = new Array<Match>();
 
   constructor(public indexPageApi: IndexPageApi) {
-    this.fetchRecommendedMatches()
-      .then(() => {
-        if (this.isAuthenticate) {
-          this.fetchUserWatchHistory()
-        }
-      })
+
+    this.fetchUserWatchHistory()
       .then(() => this.fetchMatchLists());
   }
 
@@ -55,17 +51,13 @@ class MatchesStore {
 
     let todayMatches = await this.indexPageApi.fetchTodayMatches();
     todayMatches.forEach(matchJosn => this.updateMatchFromServer(matchJosn, this.todayMatches));
+
+    let recommendedMatches = await this.indexPageApi.fetchRecommendedMatches();
+    recommendedMatches.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recommendedMatches));
   }
 
-  private fetchUserWatchHistory() {
-    this.indexPageApi.fetchUserWatchHistory()
-      .then(data => {
-        this.userWatchHistory = data;
-      });
-  }
-
-  private fetchRecommendedMatches(): Promise<void> {
-    return this.indexPageApi.fetchRecommendedMatches()
+  private fetchUserWatchHistory(): Promise<void> {
+    return this.indexPageApi.fetchUserWatchHistory()
       .then(data => {
         if (data === null) {
           this.setIsAuthenticate(false);
@@ -73,9 +65,8 @@ class MatchesStore {
         } else {
           this.setIsAuthenticate(true);
         }
-        data.forEach(matchJson => this.updateMatchFromServer(matchJson, this.recommendedMatches))
-      })
-      .catch(err => console.log(err));
+        this.userWatchHistory = data;
+      });
   }
 
   @action.bound
