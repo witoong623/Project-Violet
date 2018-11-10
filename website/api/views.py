@@ -67,11 +67,13 @@ class UserWatchHistoryListCreateDestroyAPIView(DestroyModelMixin, ListCreateAPIV
 
 
 class RecommendedMatchesList(ListAPIView):
+    today = timezone.now()
+    next_3_days = today + timedelta(days=3)
     serializer_class = MatchSerialzer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = Match.objects.filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')[:4]
+        queryset = Match.objects.filter(date__range(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
 
         if isinstance(queryset, QuerySet):
             queryset = queryset.all()
@@ -79,7 +81,8 @@ class RecommendedMatchesList(ListAPIView):
 
 
 class CompetitionMatchesList(ListAPIView):
+    today = timezone.now()
     serializer_class = MatchSerialzer
-    queryset = Match.objects.all().order_by('date')
+    queryset = Match.objects.filter(date__lt=today).order_by('-date')
     lookup_field = 'competition'
     pagination_class = RecentMatchesPagination
