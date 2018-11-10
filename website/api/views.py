@@ -73,7 +73,7 @@ class RecommendedMatchesList(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        queryset = Match.objects.filter(date__range(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
+        queryset = Match.objects.filter(date__range=(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
 
         if isinstance(queryset, QuerySet):
             queryset = queryset.all()
