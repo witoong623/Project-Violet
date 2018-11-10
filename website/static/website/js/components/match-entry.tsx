@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Match } from '../models';
 
 @observer
@@ -12,7 +12,8 @@ export class MatchEntry extends React.Component<{match: Match, isAuthenticate: b
   
       if (this.props.match.isWatch) {
         axios.post('/userwatchhistory/', { match: this.props.match.matchId })
-          .then(action(res => {
+          .then(action((res: AxiosResponse<any>) => {
+            this.props.match.watchId = res.data.id;
           }))
           .catch(action(err => {
             this.props.match.isWatch = false;
