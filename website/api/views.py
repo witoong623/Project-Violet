@@ -1,11 +1,12 @@
 from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Subquery, QuerySet, Q
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView
 from rest_framework.mixins import DestroyModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from core.models import RecommendedMatch
 from .pagination import RecentMatchesPagination
 from ..models import Match, UserWatchHistory
@@ -70,10 +71,16 @@ class RecommendedMatchesList(ListAPIView):
     today = timezone.now()
     next_3_days = today + timedelta(days=3)
     serializer_class = MatchSerialzer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        queryset = Match.objects.filter(date__range=(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
+        if isinstance(self.request.user, AnonymousUser):
+            # TODO: as of now, I use today matches for recommending matches for anonymous user, must be set to proper recommendation
+            today_min = timezone.now()
+            today_max = today_min + timedelta(days=1)
+            queryset = Match.objects.filter(date__range=(today_min, today_max)).order_by('date')
+        else:
+            queryset = Match.objects.filter(date__range=(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
 
         if isinstance(queryset, QuerySet):
             queryset = queryset.all()

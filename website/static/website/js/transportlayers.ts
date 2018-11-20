@@ -51,13 +51,10 @@ export class IndexPageApi {
     return axios.get('/recommended-matches/')
       .then(res => res.data)
       .catch(err => {
-        if (err.request.status === 403) {
-          // unauthenticate, anonymous user
-          return null;
-        } else if (err.request) {
-          // the request was made but no response was received, log then ignore
+        if (err.request) {
+          // the request was made but got error, log it and return empty array to keep application working
           console.log(err.request);
-          return;
+          return new Array();
         } else {
           // unknown error, throw it
           throw err;
