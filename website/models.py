@@ -91,3 +91,36 @@ class Season(models.Model):
 
     def __str__(self):
         return self.display_name
+
+
+class Player(models.Model):
+    GOALKEEPER = 'Goalkeeper'
+    DEFENDER = 'Defender'
+    MIDFIELDER = 'Midfielder'
+    ATTACKER = 'Attacker'
+    POSITIONS = (
+        (GOALKEEPER, 'Goalkeeper'),
+        (DEFENDER, 'Defender'),
+        (MIDFIELDER, 'Midfielder'),
+        (ATTACKER, 'Attacker')
+    )
+
+    PLAYER = 'PLAYER'
+    COACH = 'COACH'
+    ASSISTANT_COACH = 'ASSISTANT_COACH'
+    ROLES = (
+        (PLAYER, 'Player'),
+        (COACH, 'Coach'),
+        (ASSISTANT_COACH, 'Assistant Coach')
+    )
+
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=80)
+    nationality = models.CharField(max_length=30)
+    number = models.IntegerField(null=True, blank=True)
+
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, related_name='players', null=True, blank=True)
+    position = models.CharField(max_length=10, choices=POSITIONS, null=True, blank=True)
+    role = models.CharField(max_length=15, choices=ROLES)
+
+    influence = models.BooleanField(default=False)
