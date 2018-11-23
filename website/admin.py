@@ -25,9 +25,14 @@ class SeasonAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'competition')
 
 
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'team')
+    list_filter = ('team',)
+
+
 admin.site.register(Match, MatchAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(UserWatchHistory, UserWatchHistoryAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Competition, CompetitionAdmin)
-admin.site.register(Player)
+admin.site.register(Player, PlayerAdmin)

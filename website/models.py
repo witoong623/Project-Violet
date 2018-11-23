@@ -124,3 +124,6 @@ class Player(models.Model):
     role = models.CharField(max_length=15, choices=ROLES)
 
     influence = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
