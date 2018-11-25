@@ -86,6 +86,7 @@ class Season(models.Model):
     currentMatchday = models.IntegerField()
     display_name = models.CharField(max_length=20, blank=True)
 
+    teams = models.ManyToManyField(Team)
     winner = models.ForeignKey(Match, blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     competition = models.ForeignKey(Competition, related_name='seasons', on_delete=models.CASCADE)
 
