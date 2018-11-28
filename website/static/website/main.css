@@ -65,3 +65,17 @@ body > .container {
     padding: .3rem .4rem;
     border-radius: 0;
 }
+
+.team-list-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-bottom: 15px;
+}
+
+.team-list-card > img {
+    margin: 0.5rem;
+}

@@ -11,6 +11,10 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='website:index'), name='logout'),
 
     path('competition/<str:name>/', views.competition_view, name='competition'),
+    # /standing-list/<name>/
+    path('standing-list/<str:name>/', views.standing_list_view, name='standing_list'),
+    # /standing/<team_id>/
+    path('standing/<int:team_id>/', views.team_standing, name='team_standing'),
 
     # /today-matches/
     path('today-matches/', api_views.TodayMatchesList.as_view(), name='today_matches'),

@@ -1,10 +1,11 @@
 import os
 from datetime import timedelta, datetime, timezone
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
-from .models import Match
+from django.db.models import Q
+from .models import Match, Team, Competition
 
 
 COMPETITION = ['pl', 'bl1', 'pd']
@@ -15,30 +16,6 @@ COMPETITION_ID = {
 
 def index(request):
     return render(request, 'website/index.html')
-
-
-def get_comming_matches(request):
-    # last 4 matches with score
-    now = timezone.now()
-    last_previous_match = Match.objects.filter(date__lt=now).order_by('-date').first()
-    upcomming_matches = []
-
-    last_match_day = last_previous_match.match_day
-    upcomming_matches_query = Match.objects.filter(match_day=last_match_day + 1).order_by('date')
-
-    for match in upcomming_matches_query:
-        entry = {
-            'id': match.id,
-            'home_team': match.home_team.display_name,
-            'away_team': match.away_team.display_name,
-            'home_logo': os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(match.home_team.short_name)),
-            'away_logo': os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(match.away_team.short_name)),
-            'date': match.date
-        }
-
-        upcomming_matches.append(entry)
-
-    return JsonResponse(upcomming_matches, safe=False)
 
 
 def competition_view(request, name):
@@ -59,3 +36,27 @@ def competition_view(request, name):
     }
 
     return render(request, 'website/competition.html', context=context)
+
+
+def standing_list_view(request, name):
+    if name == 'pl':
+        premier_league = Competition.objects.get(code='PL')
+
+        context = {
+            'teams': premier_league.currentSeason.teams.all(),
+            'title': 'Premier League Season {}'.format(premier_league.currentSeason.display_name)
+        }
+
+        return render(request, 'website/standing-list.html', context=context)
+    else:
+        return Http404()
+
+
+def team_standing(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+
+    context = {
+        'title': team.display_name
+    }
+
+    return render(request, 'website/team-standing.html', context=context)

@@ -1,0 +1,28 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block title %}
+Project Violet - {{title}}
+{% endblock %}
+
+{% block content %}
+<h1>{{title}}</h1>
+<div class="row">
+{% for team in teams %}
+    <div class="col-3">
+        <a href="{% url 'website:team_standing' team.id %}">
+            <div class="team-list-card">
+                <img src="{% static 'website/images/' %}{{team.short_name}}.png" height="150">
+                <h5>{{team.display_name}}</h5>
+            </div>
+        </a>
+    </div>
+{% if forloop.counter|divisibleby:4 %}
+</div>
+<div class="row">
+{% endif %}
+{% if forloop.last %}
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
