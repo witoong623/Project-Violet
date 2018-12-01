@@ -56,7 +56,8 @@ def team_standing(request, team_id):
     team = get_object_or_404(Team, id=team_id)
 
     context = {
-        'title': team.display_name
+        'team': team,
+        'players': team.players.order_by('number')
     }
 
     return render(request, 'website/team-standing.html', context=context)

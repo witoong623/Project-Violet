@@ -1,4 +1,42 @@
 {% extends "website/base.html" %}
 {% load static %}
 
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{team.display_name}}{% endblock %}
+
+{% block content %}
+<h2>{{team.name}}</h2>
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>Number</td>
+                <td>Name</td>
+                <td>Nationality</td>
+                <td>Position</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+            <tr>
+                <td>
+                    {% if player.number is None %}
+                    #
+                    {% else %}
+                    {{player.number}}
+                    {% endif %}
+                </td>
+                <td>{{player.name}}</td>
+                <td>{{player.nationality}}</td>
+                <td>
+                    {% if player.position is None %}
+                    {{player.role}}
+                    {% else %}
+                    {{player.position}}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
