@@ -11,10 +11,10 @@ class MatchSerialzer(serializers.ModelSerializer):
     away_team = serializers.CharField(source='away_team.display_name')
 
     def get_home_logo(self, obj):
-        return os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(obj.home_team.short_name))
+        return os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(obj.home_team.name))
 
     def get_away_logo(self, obj):
-        return os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(obj.away_team.short_name))
+        return os.path.join(settings.STATIC_URL, 'website/images/', '{}.png'.format(obj.away_team.name))
 
     class Meta:
         model = Match
