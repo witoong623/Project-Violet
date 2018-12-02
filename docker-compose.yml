@@ -5,6 +5,8 @@ services:
     image: mariadb:10.2.18
     env_file:
       - config.env
+    volumes:
+      - ./mysql-config:/etc/mysql/conf.d/
   web:
     image: projectviolet:beta
     ports:
@@ -14,4 +16,3 @@ services:
       - db
     env_file:
       - config.env
-    
