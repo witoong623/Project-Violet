@@ -14,6 +14,8 @@ COMPETITION_DETAIL_BASE_LINK = 'http://api.football-data.org/v2/competitions/'
 
 
 class Command(BaseCommand):
+    display_names = settings.TEAMS_DISPLAY_NAME
+
     def handle(self, *args, **options):
         assert settings.FOOTBALL_API_TOKEN, 'Football API Token is required in environment variable'
 
@@ -61,8 +63,10 @@ class Command(BaseCommand):
             home_team_json = json_match['homeTeam']
             away_team_json = json_match['awayTeam']
 
-            match.home_team = Team.objects.get_or_create(id=home_team_json['id'], defaults={'name': home_team_json['name']})[0]
-            match.away_team = Team.objects.get_or_create(id=away_team_json['id'], defaults={'name': away_team_json['name']})[0]
+            match.home_team = Team.objects.get_or_create(
+                id=home_team_json['id'], defaults={'name': home_team_json['name'], 'display_name': self.display_names[home_team_json['id']]})[0]
+            match.away_team = Team.objects.get_or_create(
+                id=away_team_json['id'], defaults={'name': away_team_json['name'], 'display_name': self.display_names[away_team_json['id']]})[0]
 
             match.save()
 

@@ -146,3 +146,27 @@ WEBPACK_LOADER = {
         'POLL_INTERVAL': 1,
     }
 }
+
+# Temporary settings
+TEAMS_DISPLAY_NAME = {
+    1044: 'Bournemouth',
+    715: 'Cardiff City',
+    563: 'West Ham',
+    397: 'Brighton',
+    394: 'Huddersfield',
+    354: 'Crystal Palace',
+    346: 'Watford',
+    340: 'Southampton',
+    338: 'Leicester City',
+    328: 'Burnley',
+    76: 'Wolverhampton',
+    73: 'Tottenham',
+    67: 'Newcastle',
+    66: 'Manchester United',
+    65: 'Manchester City',
+    64: 'Liverpool',
+    63: 'Fulham',
+    62: 'Everton',
+    61: 'Chelsea',
+    57: 'Arsenal'
+}
