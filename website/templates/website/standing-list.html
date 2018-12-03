@@ -12,7 +12,7 @@ Project Violet - {{title}}
     <div class="col-3">
         <a href="{% url 'website:team_standing' team.id %}">
             <div class="team-list-card">
-                <img src="{% static 'website/images/' %}{{team.short_name}}.png" height="150">
+                <img src="{% static 'website/images/' %}{{team.name}}.png" height="150">
                 <h5>{{team.display_name}}</h5>
             </div>
         </a>
