@@ -17,6 +17,7 @@ django-webpack-loader = "*"
 djangorestframework = "*"
 factory-boy = "*"
 whitenoise = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 pylint = "*"
