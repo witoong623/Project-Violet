@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'webpack_loader',
     'rest_framework',
+    'debug_toolbar',
     'recommendation.apps.RecommendationConfig',
     'cosinesimulation.apps.CosinesimulationConfig',
     'scorebasedrecommend.apps.ScorebasedrecommendConfig',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -170,3 +172,6 @@ TEAMS_DISPLAY_NAME = {
     61: 'Chelsea',
     57: 'Arsenal'
 }
+
+# Debug toolbar settings
+INTERNAL_IPS = ['127.0.0.1']

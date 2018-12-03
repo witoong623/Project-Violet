@@ -21,6 +21,10 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
 ]
 
+# Add debug toolbar app if debug in production
+if DEBUG:
+    INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -31,6 +35,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Add debug toolbar middleware if debug in production
+if DEBUG:
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 
 DATABASES = {
     'default': {
@@ -57,3 +65,6 @@ WEBPACK_LOADER = {
         'POLL_INTERVAL': 10,
     }
 }
+
+# Debug toolbar settings
+INTERNAL_IPS = [env('INTERNAL_IPS_DEBUG', default='192.168.99.101')]
