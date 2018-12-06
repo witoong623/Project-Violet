@@ -2,7 +2,7 @@ from datetime import date
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils import timezone
-from .leaguetable import get_score_table
+from core.recommendation.common import get_score_table
 from website.models import Competition
 
 
