@@ -39,6 +39,8 @@ class Command(BaseCommand):
                     match.status = status
                     score_node = json_match['score']
                     match.winner = score_node['winner']
+                    match.home_half_score = score_node['halfTime']['homeTeam']
+                    match.away_half_score = score_node['halfTime']['awayTeam']
                     match.home_score = score_node['fullTime']['homeTeam']
                     match.away_score = score_node['fullTime']['awayTeam']
                     match.save()
@@ -57,6 +59,8 @@ class Command(BaseCommand):
             if status == Match.FINISHED:
                 score_node = json_match['score']
                 match.winner = score_node['winner']
+                match.home_half_score = score_node['halfTime']['homeTeam']
+                match.away_half_score = score_node['halfTime']['awayTeam']
                 match.home_score = score_node['fullTime']['homeTeam']
                 match.away_score = score_node['fullTime']['awayTeam']
 

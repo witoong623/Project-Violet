@@ -86,6 +86,8 @@ class Match(models.Model):
     home_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='home_team')
     away_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='away_team')
 
+    home_half_score = models.IntegerField(blank=True, null=True)
+    away_half_score = models.IntegerField(blank=True, null=True)
     home_score = models.IntegerField(blank=True, null=True)
     away_score = models.IntegerField(blank=True, null=True)
     winner = models.CharField(max_length=9, blank=True)
