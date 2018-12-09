@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Q
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 
@@ -12,7 +14,42 @@ class Team(models.Model):
         return self.name
 
 
+class MatchManager(models.Manager):
+    manchester_derby = None
+    merseyside_derby = None
+    north_london_derby = None
+    north_west_derby = None
+
+    def derby_matches(self, after=timezone.now()):
+        # find all derby teams first
+        if self.manchester_derby is None:
+            self.manchester_derby = Team.objects.filter(Q(id=65) | Q(id=66))
+
+        if self.merseyside_derby is None:
+            self.merseyside_derby = Team.objects.filter(Q(id=62) | Q(id=64))
+
+        if self.north_london_derby is None:
+            self.north_london_derby = Team.objects.filter(Q(id=57) | Q(id=73))
+
+        if self.north_west_derby is None:
+            self.north_west_derby = Team.objects.filter(Q(id=66) | Q(id=64))
+
+        # find matches that both team in derby teams compete
+        qs = (self
+              .filter(date__gt=after)
+              .filter(
+                     (Q(home_team__in=self.manchester_derby) & Q(away_team__in=self.manchester_derby)) |
+                     (Q(home_team__in=self.merseyside_derby) & Q(away_team__in=self.merseyside_derby)) |
+                     (Q(home_team__in=self.north_london_derby) & Q(away_team__in=self.north_london_derby)) |
+                     (Q(home_team__in=self.north_west_derby) & Q(away_team__in=self.north_west_derby))
+              )
+              .select_related('home_team', 'away_team'))
+        return qs
+
+
 class Match(models.Model):
+    objects = MatchManager()
+
     POSTPONED = 'POSTPONED'
     SCHEDULED = 'SCHEDULED'
     CANCELED = 'CANCELED'
