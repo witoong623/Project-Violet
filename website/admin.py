@@ -18,7 +18,7 @@ class UserWatchHistoryAdmin(admin.ModelAdmin):
 
 
 class CompetitionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'currentSeason')
+    list_display = ('name', 'current_season')
 
 
 class SeasonAdmin(admin.ModelAdmin):

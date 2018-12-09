@@ -43,8 +43,8 @@ def standing_list_view(request, name):
         premier_league = Competition.objects.get(code='PL')
 
         context = {
-            'teams': premier_league.currentSeason.teams.all(),
-            'title': 'Premier League Season {}'.format(premier_league.currentSeason.display_name)
+            'teams': premier_league.current_season.teams.all(),
+            'title': 'Premier League Season {}'.format(premier_league.current_season.display_name)
         }
 
         return render(request, 'website/standing-list.html', context=context)

@@ -110,7 +110,7 @@ class Competition(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=10)
 
-    currentSeason = models.ForeignKey('Season', blank=True, null=True, related_name='+', on_delete=models.SET_NULL)
+    current_season = models.ForeignKey('Season', blank=True, null=True, related_name='+', on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

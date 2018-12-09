@@ -109,7 +109,7 @@ class Command(BaseCommand):
             season.save()
 
         if competition_created:
-            competition.currentSeason = season
+            competition.current_season = season
             competition.save()
 
         return (competition, season)
