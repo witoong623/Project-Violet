@@ -1,0 +1,24 @@
+{% extends "scorebasedrecommend/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <h4>Recommended team by score</h4>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <td>Team name</td>
+                <td>Recommend score</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in recommended_teams %}
+            <tr>
+                <td>{{row.team.display_name}}</td>
+                <td>{{row.point}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

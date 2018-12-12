@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -9,6 +10,16 @@ class Team(models.Model):
     name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=10, default='UNKNOWN')
     display_name = models.CharField(max_length=40, blank=True)
+
+    def next_n_matches(self, after=timezone.now(), n: int=1):
+        if n <= 0:
+            raise ValueError(n)
+        matches = Match.objects.filter(date__gt=after).filter(Q(home_team=self.id) | Q(away_team=self.id)).order_by('date').select_related('home_team', 'away_team')[:n]
+
+        return matches
+
+    def get_remaining_matches(self, after=timezone.now()):
+        return Match.objects.filter(date__gt=after).filter(Q(home_team=self.id) | Q(away_team=self.id)).order_by('date').select_related('home_team', 'away_team')
 
     def __str__(self):
         return self.name

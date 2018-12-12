@@ -1,0 +1,38 @@
+{% extends "scorebasedrecommend/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <h4>There are {{teams_count}} teams</h4>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <td>Position</td>
+            <td>Team name</td>
+            <td>Played</td>
+            <td>Won</td>
+            <td>Drawn</td>
+            <td>Lost</td>
+            <td>GF</td>
+            <td>GA</td>
+            <td>GD</td>
+            <td><strong>Point</strong></td>
+        </thead>
+        <tbody>
+            {% for row in league_table %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{row.team.display_name}}</td>
+                <td>{{row.played}}</td>
+                <td>{{row.won}}</td>
+                <td>{{row.drawn}}</td>
+                <td>{{row.lost}}</td>
+                <td>{{row.goal_for}}</td>
+                <td>{{row.goal_against}}</td>
+                <td>{{row.goal_difference}}</td>
+                <td><strong>{{row.point}}</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
