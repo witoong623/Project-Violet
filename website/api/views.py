@@ -75,10 +75,11 @@ class RecommendedMatchesList(ListAPIView):
 
     def get_queryset(self):
         if isinstance(self.request.user, AnonymousUser):
-            # TODO: as of now, I use today matches for recommending matches for anonymous user, must be set to proper recommendation
-            today_min = timezone.now()
-            today_max = today_min + timedelta(days=1)
-            queryset = Match.objects.filter(date__range=(today_min, today_max)).order_by('date')
+            queryset = (Match
+                        .objects
+                        .filter(date__range=(self.today, self.next_3_days))
+                        .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.RULEBASED).values('match')))
+                        .order_by('date'))
         else:
             queryset = Match.objects.filter(date__range=(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
 
