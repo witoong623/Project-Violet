@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.core.management.base import BaseCommand, CommandError
+from website.models import Competition
 from ...models import RecommendedMatch
 from ...recommendation.contentbased import CosineSimilarity
+from ...recommendation.rulebased import RuleBasedRecommendationEngine
 
 
 class Command(BaseCommand):
@@ -33,3 +35,23 @@ class Command(BaseCommand):
             RecommendedMatch.objects.bulk_create(insert_recommended_matches)
 
         self.stdout.write('Successfully generated recommendation for {} users'.format(len(users)))
+
+        self.stdout.write('Generating recommedation from rule based')
+
+        premier_league = Competition.objects.get(id=2021)
+        rb = RuleBasedRecommendationEngine(premier_league)
+
+        rb_recommended_matches = rb.get_recommended_matches()
+
+        insert_rb_recommended_matches = []
+
+        for rb_recommended_match in rb_recommended_matches:
+            rb_recommended_match_object = RecommendedMatch(
+                match=rb_recommended_match.match,
+                recommendatoin_type=RecommendedMatch.RULEBASED,
+                value=rb_recommended_match.point
+            )
+            insert_rb_recommended_matches.append(rb_recommended_match_object)
+
+        RecommendedMatch.objects.bulk_create(insert_rb_recommended_matches)
+        self.stdout.write('Successfully generated rule-based recommendation')
