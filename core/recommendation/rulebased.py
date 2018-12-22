@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Dict, Sequence
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, F
 from core.recommendation.common import get_competition_table, CompetitionTable
 from website.models import Competition, Team, Match
 
@@ -18,6 +18,7 @@ class RecommendedResult:
     DERBY_MATCHES = 'Derby matches'
     WINNER_DECIDE_MATCHES = 'Winner decide matches'
     RELEGATION_DECIDE_MATCHES = 'Relegation decide matches'
+    PAST_FUN_MATCHES = 'Past fun matches'
 
     point: float = 0
     recommend_methods: str = ''
@@ -129,6 +130,49 @@ class RuleBasedRecommendationEngine:
             else:
                 return Match.objects.none()
 
+    def __get_from_past_fun_matches(self):
+        many_goals_matches = (Match
+                              .objects
+                              .filter(date__lt=self.at_date)
+                              .exclude(
+                                  Q(Q(home_score=1) & Q(away_score=3)) |
+                                  Q(Q(home_score=3) & Q(away_score=1)) |
+                                  Q(Q(home_score=4) & Q(away_score=0)) |
+                                  Q(Q(home_score=0) & Q(away_score=4))
+                              )
+                              .annotate(total_score=F('home_score') + F('away_score'))
+                              .filter(total_score__gte=4)
+                              .select_related('home_team', 'away_team')
+                              )
+        goal_chasing_matches = (Match
+                                .objects
+                                .filter(date__lt=self.at_date)
+                                .annotate(total_score=F('home_score') + F('away_score'))
+                                .filter(
+                                    Q(Q(home_half_score__gt=F('away_half_score')) & Q(home_score__lt=F('away_score'))) |
+                                    Q(Q(home_half_score__lt=F('away_half_score')) & Q(home_score__gt=F('away_score')))
+                                )
+                                .select_related('home_team', 'away_team')
+                                )
+
+        recommended_matches = []
+
+        for match in many_goals_matches.union(goal_chasing_matches):
+            try:
+                similar_match = (Match
+                                 .objects
+                                 .get(
+                                     Q(status=Match.SCHEDULED) &
+                                     Q(home_team=match.away_team) &
+                                     Q(away_team=match.home_team)
+                                 )
+                                 )
+                recommended_matches.append(similar_match)
+            except Match.DoesNotExist:
+                continue
+
+        return recommended_matches
+
     def get_recommended_teams(self) -> List[RecommendedTeam]:
         score_table = self.__get_competitiontable_cache().score_table
         passed_score_table = []
@@ -194,14 +238,24 @@ class RuleBasedRecommendationEngine:
 
         for winner_decide_match in winner_decide_matches:
             result = get_recommended_result(winner_decide_match.id, winner_decide_match)
-            result += 1
+            result.point += 1
             result.add_recommend_method(RecommendedResult.WINNER_DECIDE_MATCHES)
 
         relegation_decide_matches = self.__get_relegattion_decide_matches()
 
         for relegation_decide_match in relegation_decide_matches:
             result = get_recommended_result(relegation_decide_match.id, relegation_decide_match)
-            result += 0.5
+            result.point += 0.5
             result.add_recommend_method(RecommendedResult.RELEGATION_DECIDE_MATCHES)
 
-        return recommended_matches.values()
+        past_fun_matches = self.__get_from_past_fun_matches()
+
+        for past_fun_match in past_fun_matches:
+            result = get_recommended_result(past_fun_match.id, past_fun_match)
+            result.point += 0.25
+            result.add_recommend_method(RecommendedResult.PAST_FUN_MATCHES)
+
+        # match that have point more than average point get recommended
+        avg_point = sum(r.point for r in recommended_matches.values()) / len(recommended_matches)
+
+        return filter(lambda r: r.point >= avg_point, recommended_matches.values())
