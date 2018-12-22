@@ -37,6 +37,7 @@ class Command(BaseCommand):
         self.stdout.write('Successfully generated recommendation for {} users'.format(len(users)))
 
         self.stdout.write('Generating recommedation from rule based')
+        RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.RULEBASED).delete()
 
         premier_league = Competition.objects.get(id=2021)
         rb = RuleBasedRecommendationEngine(premier_league)
