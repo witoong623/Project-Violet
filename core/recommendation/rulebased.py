@@ -227,12 +227,12 @@ class RuleBasedRecommendationEngine:
             result.point += 0.5
             result.add_recommend_method(RecommendedResult.TOP_TEAMS)
 
-        low_teams_matches = self.__get_almost_relegated_teams_matches()
+        # low_teams_matches = self.__get_almost_relegated_teams_matches()
 
-        for low_team_match in low_teams_matches:
-            result = get_recommended_result(low_team_match.id, low_team_match)
-            result.point += 0.5
-            result.add_recommend_method(RecommendedResult.ALMOST_RELEGATED_TEAMS)
+        # for low_team_match in low_teams_matches:
+        #     result = get_recommended_result(low_team_match.id, low_team_match)
+        #     result.point += 0.5
+        #     result.add_recommend_method(RecommendedResult.ALMOST_RELEGATED_TEAMS)
 
         winner_decide_matches = self.__get_winner_decide_matches()
 
