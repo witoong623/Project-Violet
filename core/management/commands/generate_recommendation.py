@@ -5,6 +5,7 @@ from website.models import Competition
 from ...models import RecommendedMatch
 from ...recommendation.contentbased import CosineSimilarity
 from ...recommendation.rulebased import RuleBasedRecommendationEngine
+from ...recommendation.collaborative import CollaborativeRecommender
 
 
 class Command(BaseCommand):
@@ -56,3 +57,24 @@ class Command(BaseCommand):
 
         RecommendedMatch.objects.bulk_create(insert_rb_recommended_matches)
         self.stdout.write('Successfully generated rule-based recommendation')
+
+        self.stdout.write('Generating recommendation for collaborative')
+        RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.COLLABORATIVE).delete()
+
+        collaborative_recommender = CollaborativeRecommender()
+        collaborative_recommended_matches = collaborative_recommender.get_collaborative_recommendation()
+
+        insert_cb_recommended_matches = []
+
+        for user, recommended_matches in collaborative_recommended_matches.items():
+            for recommended_match in recommended_matches:
+                cb_recommended_match_object = RecommendedMatch(
+                    user=user,
+                    match=recommended_match,
+                    recommendatoin_type=RecommendedMatch.COLLABORATIVE,
+                    value=0
+                )
+                insert_cb_recommended_matches.append(cb_recommended_match_object)
+
+        RecommendedMatch.objects.bulk_create(insert_cb_recommended_matches)
+        self.stdout.write('Successfully generated collaborative recommendation for {} users'.format(len(collaborative_recommended_matches.keys())))
