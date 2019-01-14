@@ -23,12 +23,12 @@ class Command(BaseCommand):
 
             insert_recommended_matches = []
 
-            for recommended_match in recommended_matches:
+            for match_and_score in recommended_matches:
                 recommended_match_object = RecommendedMatch(
                     user=user,
-                    match=recommended_match[0],
+                    match=match_and_score[0],
                     recommendatoin_type=RecommendedMatch.CONTENTBASED,
-                    value=recommended_match[1]
+                    value=match_and_score[1]
                 )
                 insert_recommended_matches.append(recommended_match_object)
 
@@ -67,12 +67,12 @@ class Command(BaseCommand):
         insert_cb_recommended_matches = []
 
         for user, recommended_matches in collaborative_recommended_matches.items():
-            for recommended_match in recommended_matches:
+            for match_and_score in recommended_matches:
                 cb_recommended_match_object = RecommendedMatch(
                     user=user,
-                    match=recommended_match,
+                    match=match_and_score[0],
                     recommendatoin_type=RecommendedMatch.COLLABORATIVE,
-                    value=0
+                    value=match_and_score[1]
                 )
                 insert_cb_recommended_matches.append(cb_recommended_match_object)
 

@@ -33,7 +33,7 @@ class CollaborativeRecommender:
     def __init__(self, at_date=timezone.now()):
         self.at_date = at_date
 
-    def get_collaborative_recommendation(self) -> Dict[User, List[Match]]:
+    def get_collaborative_recommendation(self) -> Dict[User, List[Tuple[Match, float]]]:
         ''' Return list of RecommendedMatch associate with specific user '''
         users_favorite_teams = self.__find_favorite_teams_of_users()
 
@@ -89,12 +89,13 @@ class CollaborativeRecommender:
             similar_users_on_teams[other_user] = both_like
         return similar_users_on_teams
 
-    def __get_recommended_matches_from_similar_users(self, given_user, users) -> List[Match]:
-        other_users_recommended_matches = (Match
+    def __get_recommended_matches_from_similar_users(self, given_user, users) -> List[Tuple[Match, float]]:
+        other_users_recommended_matches = (RecommendedMatch
                                            .objects
-                                           .filter(date__gt=self.at_date)
-                                           .filter(id__in=Subquery(RecommendedMatch.objects.filter(Q(recommendatoin_type=RecommendedMatch.CONTENTBASED) & Q(user__in=users)).values('match')))
+                                           .filter(match__date__gt=self.at_date)
+                                           .filter(match__id__in=Subquery(RecommendedMatch.objects.filter(Q(recommendatoin_type=RecommendedMatch.CONTENTBASED) & Q(user__in=users)).values('match')))
                                            .exclude(id__in=Subquery(RecommendedMatch.objects.filter(Q(recommendatoin_type=RecommendedMatch.CONTENTBASED) & Q(user=given_user)).values('match')))
-                                           .distinct())
+                                           .distinct()
+                                           .select_related('match'))
 
-        return [match for match in other_users_recommended_matches]
+        return [(recommended_match_entry.match, recommended_match_entry.value) for recommended_match_entry in other_users_recommended_matches]
