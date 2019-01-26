@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse, Http404
 from django.utils import timezone
 from django.db.models import Q
+
+from core.models import ScoreTable
 from .models import Match, Team, Competition
 
 
@@ -53,11 +55,15 @@ def standing_list_view(request, name):
 
 
 def team_standing(request, team_id):
+    premier_league = Competition.objects.get(id=2021)
+    season = premier_league.current_season
     team = get_object_or_404(Team, id=team_id)
+    score_table = ScoreTable.objects.filter(team=team, competition=premier_league, season=season).first()
 
     context = {
         'team': team,
-        'players': team.players.order_by('number')
+        'players': team.players.order_by('number'),
+        'stat': score_table
     }
 
     return render(request, 'website/team-standing.html', context=context)
