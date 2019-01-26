@@ -67,3 +67,26 @@ def team_standing(request, team_id):
     }
 
     return render(request, 'website/team-standing.html', context=context)
+
+
+def table_view(request, name):
+    title = None
+
+    if name == 'pl':
+        title = 'Premier League'
+    elif name == 'bl1':
+        title = 'Bundesliga'
+    elif name == 'pd':
+        title = 'Laliga'
+    else:
+        return Http404()
+
+    competition = Competition.objects.get(pk=COMPETITION_ID[name])
+    score_table = ScoreTable.objects.filter(competition=competition, season=competition.current_season).select_related('team')
+
+    context = {
+        'title': title,
+        'score_table': score_table
+    }
+
+    return render(request, 'website/table.html', context=context)

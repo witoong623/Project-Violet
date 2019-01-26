@@ -39,6 +39,14 @@
                             <a class="dropdown-item" href="{% url 'website:standing_list' 'pl' %}">Premier League</a>
                         </div>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Tables
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'website:table' 'pl' %}">Premier League</a>
+                        </div>
+                    </li>
                 </ul>
                 {% if user.is_authenticated %}
                 <div class="form-inline">

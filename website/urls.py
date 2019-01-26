@@ -29,5 +29,7 @@ urlpatterns = [
     # /recommended-matches/
     path('recommended-matches/', api_views.RecommendedMatchesList.as_view(), name='recommended_matches'),
     # /competition/:pk/
-    path('api/competition/<int:competition>/', api_views.CompetitionMatchesList.as_view(), name='competition_matches')
+    path('api/competition/<int:competition>/', api_views.CompetitionMatchesList.as_view(), name='competition_matches'),
+    # /table/<str:name>/
+    path('table/<str:name>/', views.table_view, name='table'),
 ]

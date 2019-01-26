@@ -1,0 +1,36 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<h2>{{title}}</h2>
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>Position</td>
+                <td>Team</td>
+                <td>Played</td>
+                <td>Won</td>
+                <td>Drawn</td>
+                <td>Lost</td>
+                <td>Point</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in score_table %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{row.team}}</td>
+                <td>{{row.played}}</td>
+                <td>{{row.won}}</td>
+                <td>{{row.draw}}</td>
+                <td>{{row.lost}}</td>
+                <td>{{row.point}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
