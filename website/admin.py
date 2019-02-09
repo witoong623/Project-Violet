@@ -1,9 +1,25 @@
 from django.contrib import admin
+from django.db.models import Q
 from .models import Match, Team, Player, UserWatchHistory, Season, Competition
+
+
+class MatchContainTeam(admin.SimpleListFilter):
+    title = 'Contain team'
+    parameter_name = 'team_id'
+
+    def lookups(self, request, model_admin):
+        return [(team.id, team.display_name) for team in Team.objects.all()] + [('all', ('All Teams'))]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'all':
+            return queryset.all()
+        else:
+            return queryset.filter(Q(home_team=self.value()) | Q(away_team=self.value()))
 
 
 class MatchAdmin(admin.ModelAdmin):
     list_display = ('its_name', 'competition', 'season')
+    list_filter = (MatchContainTeam,)
 
     def its_name(self, obj):
         return obj.__str__()
