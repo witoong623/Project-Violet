@@ -70,13 +70,13 @@ class CompetitionPage extends React.Component<{store: CompetitionMatchStore}> {
     return (
       <table className="table table-bordered">
         <thead>
-          <tr>
-            <td>Date</td>
-            <td>Home team</td>
-            <td>Away team</td>
-            <td>Score</td>
+          <tr className="thead-light">
+            <th>Date</th>
+            <th>Home team</th>
+            <th>Away team</th>
+            <th>Score</th>
             {this.props.store.isAuthenticate &&
-              <td>Watch?</td>
+              <th>Watch?</th>
             }
           </tr>
         </thead>
