@@ -44,6 +44,12 @@ class Command(BaseCommand):
                     match.home_score = score_node['fullTime']['homeTeam']
                     match.away_score = score_node['fullTime']['awayTeam']
                     match.save()
+                elif status == Match.SCHEDULED:
+                    # update schedule match to ensure that match's date is up to date
+                    match.status = status
+                    match.date = dateutil.parser.parse(json_match['utcDate'])
+                    match.match_day = json_match['matchday']
+                    match.save()
 
                 continue
             except Match.DoesNotExist:
