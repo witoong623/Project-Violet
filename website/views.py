@@ -62,7 +62,7 @@ def team_standing(request, team_id):
 
     context = {
         'team': team,
-        'players': team.players.order_by('number'),
+        'players': team.players.exclude(Q(role='PLAYER') & Q(number=None)).order_by('number'),
         'stat': score_table
     }
 
