@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import * as moment from 'moment';
 import { observable, action, configure, runInAction } from 'mobx';
 import { observer } from "mobx-react";
 import axios from 'axios';
@@ -39,6 +40,11 @@ class RowTable extends React.Component<{match: Match, isAuthenticate: boolean}> 
   
   render() {
     const { match, isAuthenticate } = this.props;
+    
+    let matchDate = moment(match.jsDate);
+    let threeDaysAgo = moment().subtract(3, 'days');
+    let today = moment()
+    const disabled = !(matchDate.isBetween(threeDaysAgo, today) || match.homeScore == null)
 
     return (
       <tr>
@@ -49,7 +55,7 @@ class RowTable extends React.Component<{match: Match, isAuthenticate: boolean}> 
         {isAuthenticate &&
           <td>
             <div className="form-check">
-              <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} />
+              <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} disabled={disabled} />
               <label className="form-check-label" htmlFor={match.matchId.toString()}>
                 Watch this match
               </label>
