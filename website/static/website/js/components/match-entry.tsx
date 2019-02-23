@@ -73,16 +73,6 @@ export class MatchEntry extends React.Component<{match: Match, isAuthenticate: b
               <h5>{match.away}</h5>
               <h6>{match.date}</h6>
             </div>
-            {isAuthenticate &&
-              <div className="match-card-control">
-                <div className="form-check">
-                  <input id={match.matchId.toString()} className="form-check-input" type="checkbox" checked={match.isWatch} onChange={this.handleInputChange} />
-                  <label className="form-check-label" htmlFor={match.matchId.toString()}>
-                    Watch this match
-                </label>
-                </div>
-              </div>
-            }
           </div>
         </div>
       )
