@@ -14,12 +14,12 @@ from .serializers import MatchSerialzer, UserWatchHistorySerializer
 
 
 class UpcommingMatchesList(ListAPIView):
-    '''Return all matches from next match day '''
-    today = timezone.now()
-    next_3_days = today + timedelta(days=3)
+    '''Return all matches from tomorrow to next 3 days '''
+    tomorrow = timezone.now() + timedelta(days=1)
+    next_3_days = tomorrow + timedelta(days=3)
     queryset = (Match
                 .objects
-                .filter(Q(date__range=(today, next_3_days)) & Q(status=Match.SCHEDULED))
+                .filter(Q(date__range=(tomorrow, next_3_days)) & Q(status=Match.SCHEDULED))
                 .order_by('date'))
     serializer_class = MatchSerialzer
 
