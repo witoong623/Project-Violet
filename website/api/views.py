@@ -91,6 +91,6 @@ class RecommendedMatchesList(ListAPIView):
 class CompetitionMatchesList(ListAPIView):
     today = timezone.now()
     serializer_class = MatchSerialzer
-    queryset = Match.objects.filter(date__lt=today).order_by('-date')
+    queryset = Match.objects.filter(date__lt=today).order_by('-date', 'id')
     lookup_field = 'competition'
     pagination_class = RecentMatchesPagination
