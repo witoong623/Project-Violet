@@ -78,10 +78,20 @@ class RecommendedMatchesList(ListAPIView):
             queryset = (Match
                         .objects
                         .filter(date__range=(self.today, self.next_3_days))
-                        .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.RULEBASED).values('match')))
+                        .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.HYBRID, user=None).values('match')))
                         .order_by('date'))
         else:
-            queryset = Match.objects.filter(date__range=(self.today, self.next_3_days)).filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match'))).order_by('date')
+            queryset = (Match
+                        .objects
+                        .filter(date__range=(self.today, self.next_3_days))
+                        .filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match')))
+                        .order_by('date'))
+            queryset2 = (Match
+                         .objects
+                         .filter(date__range=(self.today, self.next_3_days))
+                         .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.HYBRID, user=None).values('match')))
+                         .order_by('date'))
+            queryset = queryset.union(queryset2)
 
         if isinstance(queryset, QuerySet):
             queryset = queryset.all()
