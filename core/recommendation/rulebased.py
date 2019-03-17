@@ -217,7 +217,7 @@ class RuleBasedRecommendationEngine:
 
         for derby_match in derby_matches:
             result = get_recommended_result(derby_match.id, derby_match)
-            result.point += 0.5
+            result.point += 0.75
             result.add_recommend_method(RecommendedResult.DERBY_MATCHES)
 
         top_teams_matches = self.__get_top_teams_matches()
@@ -255,7 +255,8 @@ class RuleBasedRecommendationEngine:
             result.point += 0.25
             result.add_recommend_method(RecommendedResult.PAST_FUN_MATCHES)
 
+        # TODO: move this code to generate recommendation command
         # match that have point more than average point get recommended
-        avg_point = sum(r.point for r in recommended_matches.values()) / len(recommended_matches)
+        # avg_point = sum(r.point for r in recommended_matches.values()) / len(recommended_matches)
 
-        return filter(lambda r: r.point >= avg_point, recommended_matches.values())
+        return list(recommended_matches.values())
