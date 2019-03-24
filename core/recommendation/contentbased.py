@@ -121,9 +121,7 @@ class CosineSimilarity:
             divisor_mp = math.sqrt(divisor_mp)
 
             cs = dividend_up_mp / (divisor_mp * divisor_up)
-
-            if cs >= self.cs_baseline:
-                recommended_matches.append((match, cs))
+            recommended_matches.append((match, cs))
 
         if len(recommended_matches) == 0:
             return None
