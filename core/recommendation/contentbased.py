@@ -35,15 +35,15 @@ def get_user_profile(user):
     user_profile = UserProfile(user)
 
     for team, count in teams_counter.items():
-        pc = count / matches_num * 100
+        pc = count / matches_num
         user_profile.teamsmatrix[team] = pc
 
     for competition, count in competitions_counter.items():
-        pc = count / matches_num * 100
+        pc = count / matches_num
         user_profile.competitionsmatrix[competition] = pc
 
     for time, count in times_counter.items():
-        pc = count / matches_num * 100
+        pc = count / matches_num
         user_profile.timematrix[time] = pc
 
     return user_profile
