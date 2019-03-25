@@ -16,7 +16,7 @@ from .serializers import MatchSerialzer, UserWatchHistorySerializer
 class UpcommingMatchesList(ListAPIView):
     '''Return all matches from tomorrow to next 3 days '''
     tomorrow = timezone.now() + timedelta(days=1)
-    next_3_days = tomorrow + timedelta(days=3)
+    next_3_days = tomorrow + timedelta(days=7)
     queryset = (Match
                 .objects
                 .filter(Q(date__range=(tomorrow, next_3_days)) & Q(status=Match.SCHEDULED))
@@ -69,7 +69,7 @@ class UserWatchHistoryListCreateDestroyAPIView(DestroyModelMixin, ListCreateAPIV
 
 class RecommendedMatchesList(ListAPIView):
     today = timezone.now()
-    next_3_days = today + timedelta(days=3)
+    next_3_days = today + timedelta(days=7)
     serializer_class = MatchSerialzer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
