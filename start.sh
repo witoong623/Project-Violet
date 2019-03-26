@@ -20,6 +20,8 @@ echo "Update matches"
 python manage.py fetch_and_update_match
 echo "Update players"
 python manage.py update_player
+echo "Generate Score Table"
+python manage.py generate_score_table
 
 # Start server
 gunicorn --env DJANGO_SETTINGS_MODULE=projectviolet.settings_prod -b 0.0.0.0:8000 projectviolet.wsgi --workers 1
