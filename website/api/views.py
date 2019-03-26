@@ -9,16 +9,19 @@ from rest_framework.mixins import DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from core.models import RecommendedMatch
 from .pagination import RecentMatchesPagination
-from ..models import Match, UserWatchHistory
+from ..models import Match, UserWatchHistory, Competition, Season
 from .serializers import MatchSerialzer, UserWatchHistorySerializer
 
 
 class UpcommingMatchesList(ListAPIView):
     '''Return all matches from tomorrow to next 3 days '''
+    premier_league = Competition.objects.get(id=2021)
+    current_season = premier_league.current_season
     tomorrow = timezone.now() + timedelta(days=1)
     next_3_days = tomorrow + timedelta(days=7)
     queryset = (Match
                 .objects
+                .filter(season=current_season)
                 .filter(Q(date__range=(tomorrow, next_3_days)) & Q(status=Match.SCHEDULED))
                 .order_by('date'))
     serializer_class = MatchSerialzer
@@ -34,9 +37,11 @@ class RecentMatchesList(ListAPIView):
 
 class TodayMatchesList(ListAPIView):
     '''Return matches that will be playing today '''
+    premier_league = Competition.objects.get(id=2021)
+    current_season = premier_league.current_season
     today_min = timezone.now()
     today_max = today_min + timedelta(days=1)
-    queryset = Match.objects.filter(date__range=(today_min, today_max)).order_by('date')
+    queryset = Match.objects.filter(season=current_season).filter(date__range=(today_min, today_max)).order_by('date')
     serializer_class = MatchSerialzer
 
 
@@ -68,6 +73,8 @@ class UserWatchHistoryListCreateDestroyAPIView(DestroyModelMixin, ListCreateAPIV
 
 
 class RecommendedMatchesList(ListAPIView):
+    premier_league = Competition.objects.get(id=2021)
+    current_season = premier_league.current_season
     today = timezone.now()
     next_3_days = today + timedelta(days=7)
     serializer_class = MatchSerialzer
@@ -77,17 +84,20 @@ class RecommendedMatchesList(ListAPIView):
         if isinstance(self.request.user, AnonymousUser):
             queryset = (Match
                         .objects
+                        .filter(season=self.current_season)
                         .filter(date__range=(self.today, self.next_3_days))
                         .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.HYBRID, user=None).values('match')))
                         .order_by('date'))
         else:
             queryset = (Match
                         .objects
+                        .filter(season=self.current_season)
                         .filter(date__range=(self.today, self.next_3_days))
                         .filter(id__in=Subquery(RecommendedMatch.objects.filter(user=self.request.user).values('match')))
                         .order_by('date'))
             queryset2 = (Match
                          .objects
+                         .filter(season=self.current_season)
                          .filter(date__range=(self.today, self.next_3_days))
                          .filter(id__in=Subquery(RecommendedMatch.objects.filter(recommendatoin_type=RecommendedMatch.HYBRID, user=None).values('match')))
                          .order_by('date'))
