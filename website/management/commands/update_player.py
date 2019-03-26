@@ -21,7 +21,7 @@ class Command(BaseCommand):
         assert settings.FOOTBALL_API_TOKEN, 'Football API Token is required in environment variable'
 
         # pause to avoid request limit
-        time.sleep(60)
+        time.sleep(600)
 
         self.check_and_pause()
         HEADER = {'X-Auth-Token': settings.FOOTBALL_API_TOKEN}
