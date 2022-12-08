@@ -1,7 +1,7 @@
 # requirements.txt is used only when deploying project on server, no on development machine too
 asn1crypto==0.24.0
 astroid==2.0.4
-certifi==2018.10.15
+certifi==2022.12.7
 cffi==1.11.5
 chardet==3.0.4
 colorama==0.4.0
