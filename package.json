@@ -38,7 +38,7 @@
     "webpack": "^4.20.2",
     "webpack-bundle-tracker": "^0.4.2-beta",
     "webpack-clean-obsolete-chunks": "^0.4.0",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "@types/react": "^16.4.18",
